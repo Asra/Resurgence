@@ -1,5 +1,10 @@
-﻿public class GuildRank
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+public class GuildRank
 {
+    [Key]
+    public int Id { get; set; }
     public List<GuildMember> Members = new List<GuildMember>();
     public string Name = "";
     public int Index = 0;
@@ -61,12 +66,19 @@ public class GuildStorageItem
 
 public class GuildMember
 {
-    public string Name = "";
-    public int Id;
-    public object Player;
-    public DateTime LastLogin;
-    public bool hasvoted;
-    public bool Online;
+    [Key]
+    public int Id { get; set; }
+    
+    [Required]
+    [MaxLength(255)]  // Adjust the length as needed
+    public string Name { get; set; } = "";
+    
+    [NotMapped]  // Since Player is a runtime object, we don't store it in DB
+    public object Player { get; set; }
+    
+    public DateTime LastLogin { get; set; }
+    public bool HasVoted { get; set; }  // Changed to PascalCase per C# conventions
+    public bool Online { get; set; }
 
     public GuildMember() { }
 
@@ -75,7 +87,7 @@ public class GuildMember
         Name = reader.ReadString();
         Id = reader.ReadInt32();
         LastLogin = DateTime.FromBinary(reader.ReadInt64());
-        hasvoted = reader.ReadBoolean();
+        HasVoted = reader.ReadBoolean();
         Online = reader.ReadBoolean();
         Online = offline ? false : Online;
     }
@@ -84,22 +96,23 @@ public class GuildMember
         writer.Write(Name);
         writer.Write(Id);
         writer.Write(LastLogin.ToBinary());
-        writer.Write(hasvoted);
+        writer.Write(HasVoted);
         writer.Write(Online);
     }
 }
 
 public class GuildBuffInfo
 {
-    public int Id;
-    public int Icon = 0;
-    public string Name = "";
-    public byte LevelRequirement;
-    public byte PointsRequirement = 1;
-    public int TimeLimit;
-    public int ActivationCost;
+    [Key]
+    public int Id { get; set; }
+    public int Icon { get; set; }
+    public string Name { get; set; } = "";
+    public byte LevelRequirement { get; set; }
+    public byte PointsRequirement { get; set; } = 1;
+    public int TimeLimit { get; set; }
+    public int ActivationCost { get; set; }
 
-    public Stats Stats;
+    public virtual Stats Stats { get; set; }
 
     public GuildBuffInfo() 
     {
@@ -216,10 +229,15 @@ public class GuildBuffInfo
 
 public class GuildBuff
 {
-    public int Id;
-    public GuildBuffInfo Info;
-    public bool Active = false;
-    public int ActiveTimeRemaining;
+    [Key]
+    public int Id { get; set; }
+    
+    public int InfoId { get; set; }  // Foreign key
+    [ForeignKey("InfoId")]
+    public virtual GuildBuffInfo Info { get; set; }
+    
+    public bool Active { get; set; } = false;
+    public int ActiveTimeRemaining { get; set; }
 
     public bool UsingGuildSkillIcon
     {

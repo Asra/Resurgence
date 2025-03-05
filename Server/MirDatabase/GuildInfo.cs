@@ -1,52 +1,73 @@
 using System.Drawing;
-﻿using Server.MirEnvir;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Server.MirEnvir;
 using Server.MirObjects;
 
 namespace Server.MirDatabase
 {
     public class GuildInfo
     {
-        public int GuildIndex = 0;
-        public string Name = "";
-        public byte Level = 0;
-        public byte SparePoints = 0;
-        public long Experience = 0;
-        public uint Gold = 0;
+        [Key]
+        public int GuildIndex { get; set; } = 0;
 
-        public Int32 Votes = 0;
-        public DateTime LastVoteAttempt;
-        public bool Voting = false;
+        public string Name { get; set; } = "";
 
-        public int Membercount = 0;
-        public List<GuildRank> Ranks = new List<GuildRank>();
-        public GuildStorageItem[] StoredItems = new GuildStorageItem[112];
-        public List<GuildBuff> BuffList = new List<GuildBuff>();
-        public List<string> Notice = new List<string>();
+        public byte Level { get; set; }
+        public byte SparePoints { get; set; }
+        public long Experience { get; set; }
+        public uint Gold { get; set; }
 
-        public long MaxExperience = 0;
-        public int MemberCap = 0;
+        public int Votes { get; set; }
+        public DateTime LastVoteAttempt { get; set; }
+        public bool Voting { get; set; }
 
-        public ushort FlagImage = 1000;
-        public Color FlagColour = Color.White;
+        public int Membercount { get; set; }
 
-        public bool NeedSave = false;
+        // Navigation properties
+        public virtual List<GuildRank> Ranks { get; set; } = new List<GuildRank>();
+        
+        [NotMapped] 
+        public GuildStorageItem[] StoredItems { get; set; } = new GuildStorageItem[112];
+        
+        public virtual List<GuildBuff> BuffList { get; set; } = new List<GuildBuff>();
+        public virtual List<String> Notice { get; set; } = new List<String>();
 
-        public DateTime GTRent = DateTime.MinValue;
-        public DateTime GTBegin = DateTime.MinValue;
-        public int GTIndex = -1;
-        public int GTKey = 0;
-        public int GTPrice;
-        protected static Envir Envir
-        {
-            get { return Envir.Main; }
+        [NotMapped]
+        public long MaxExperience { get; set; }
+        
+        public int MemberCap { get; set; }
+
+        public ushort FlagImage { get; set; } = 1000;
+        
+        public int FlagColourArgb { get; set; } = Color.White.ToArgb();
+        
+        [NotMapped]
+        public Color FlagColour 
+        { 
+            get => Color.FromArgb(FlagColourArgb);
+            set => FlagColourArgb = value.ToArgb();
         }
-        public bool HasGT
+
+        public DateTime GTRent { get; set; } = DateTime.MinValue;
+        public DateTime GTBegin { get; set; } = DateTime.MinValue;
+        public int GTIndex { get; set; } = -1;
+        public int GTKey { get; set; }
+        public int GTPrice { get; set; }
+
+        [NotMapped]
+        public bool NeedSave { get; set; }
+
+        [NotMapped]
+        protected static Envir Envir => Envir.Main;
+
+        [NotMapped]
+        public bool HasGT => GTRent > DateTime.Now;
+
+        public GuildInfo()
         {
-            get
-            {
-                return GTRent > DateTime.Now;
-            }
         }
+
         public GuildInfo(PlayerObject owner, string name)
         {
             Name = name;
@@ -140,7 +161,6 @@ namespace Server.MirDatabase
             {
                 for (int j = 0; j < buffCount; j++)
                 {
-                    //new GuildBuff(reader);
                     BuffList.Add(new GuildBuff(reader));
                 }
             }
@@ -253,5 +273,17 @@ namespace Server.MirDatabase
             writer.Write(GTPrice);
             writer.Write(GTBegin.ToBinary());
         }
+    }
+
+    public class GuildNotice
+    {
+        [Key]
+        public int Id { get; set; }
+        
+        public int GuildInfoId { get; set; }
+        public string Content { get; set; } = "";
+        
+        [ForeignKey("GuildInfoId")]
+        public virtual GuildInfo Guild { get; set; }
     }
 }

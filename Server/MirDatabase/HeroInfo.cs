@@ -1,16 +1,32 @@
 ﻿using Server.MirEnvir;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server.MirDatabase
 {
     public class HeroInfo : CharacterInfo
     {
-        public bool AutoPot;
-        public byte Grade;
-        public int HPItemIndex;
-        public int MPItemIndex;
-        public byte AutoHPPercent;
-        public byte AutoMPPercent;
-        public ushort SealCount;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        public bool AutoPot { get; set; }
+
+        public byte Grade { get; set; }
+
+        public int HPItemIndex { get; set; }
+
+        public int MPItemIndex { get; set; }
+
+        public byte AutoHPPercent { get; set; }
+
+        public byte AutoMPPercent { get; set; }
+
+        public ushort SealCount { get; set; }
+
+        public HeroInfo()
+        {
+        }
+
         public HeroInfo(ClientPackets.NewHero p)
         {
             Name = p.Name;

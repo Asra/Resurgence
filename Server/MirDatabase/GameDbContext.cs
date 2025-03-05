@@ -9,6 +9,9 @@ namespace Server.MirDatabase
         public DbSet<MovementInfo> MovementInfos { get; set; }
         public DbSet<SafeZoneInfo> SafeZoneInfos { get; set; }
         public DbSet<RespawnInfo> RespawnInfos { get; set; }
+        public DbSet<GuildInfo> GuildInfos { get; set; }
+        public DbSet<HeroInfo> HeroInfos { get; set; }
+        public DbSet<MagicInfo> MagicInfos { get; set; }
 
         public GameDbContext() { }
 

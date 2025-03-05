@@ -975,6 +975,7 @@ namespace Server.MirEnvir
             using (var db = new GameDbContext())
             {
                 db.MapInfos.AddRange(MapInfoList);
+                db.MagicInfos.AddRange(MagicInfoList);
                 db.SaveChanges();
                 MessageQueue.EnqueueDebugging($"Saving SQL database...");
             }
