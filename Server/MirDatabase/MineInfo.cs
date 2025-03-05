@@ -1,4 +1,7 @@
 using System.Drawing;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 ﻿namespace Server.MirDatabase
 {
     public class MineSet
@@ -71,9 +74,24 @@ using System.Drawing;
 
     public class MineZone
     {
-        public byte Mine;
-        public Point Location;
-        public ushort Size;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; } // Primary Key
+        public byte Mine { get; set; }
+        public int LocationX { get; set; }
+        public int LocationY { get; set; }
+        public ushort Size { get; set; }
+
+        [NotMapped]
+        public System.Drawing.Point Location
+        {
+            get => new System.Drawing.Point(LocationX, LocationY);
+            set
+            {
+                LocationX = value.X;
+                LocationY = value.Y;
+            }
+        }
 
         public MineZone()
         {

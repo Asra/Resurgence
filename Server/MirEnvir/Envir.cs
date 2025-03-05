@@ -1,4 +1,5 @@
 ﻿using ClientPackets;
+using Microsoft.EntityFrameworkCore;
 using Server.Library.MirDatabase;
 using Server.Library.Utils;
 using Server.MirDatabase;
@@ -909,6 +910,8 @@ namespace Server.MirEnvir
             for (var i = 0; i < Players.Count; i++) Players[i].HasUpdatedBaseStats = false;
         }
 
+        
+
         public void SaveDB()
         {
             using (var stream = File.Create(DatabasePath))
@@ -963,9 +966,39 @@ namespace Server.MirEnvir
                 writer.Write(GTMapList.Count);
                 for (var i = 0; i < GTMapList.Count; i++)
                     GTMapList[i].Save(writer);
+
+                SaveSqlDB();
             }
         }
 
+        public void SaveSqlDB() {
+            using (var db = new GameDbContext())
+            {
+                db.MapInfos.AddRange(MapInfoList);
+                db.SaveChanges();
+                MessageQueue.EnqueueDebugging($"Saving SQL database...");
+            }
+        }
+
+        public void LoadSqlDb()
+        {
+            MessageQueue.EnqueueDebugging($"Loading SQL database...");
+            using (var db = new GameDbContext())
+            {
+                List<MapInfo> mapInfos = db.MapInfos
+                    .Include(m => m.Respawns)
+                    .Include(m => m.SafeZones)
+                    .ToList();
+
+                MapInfoList.Clear();
+                MapInfoList.AddRange(mapInfos);
+
+                foreach (var map in MapInfoList)
+                {
+                    MessageQueue.EnqueueDebugging($"Map {map.Index}: Name {map.FileName})");
+                }
+            }
+        }
 
         public CharacterInfo GetArchivedCharacter(string name)
         {
@@ -1392,6 +1425,8 @@ namespace Server.MirEnvir
                     }
                 Settings.LinkGuildCreationItems(ItemInfoList);
             }
+
+            //LoadSqlDb();
 
             return true;
         }
