@@ -48,8 +48,11 @@ public class GuildRank
 
 public class GuildStorageItem
 {
-    public UserItem Item;
-    public long UserId = 0;
+    [Key]
+    public int Id { get; set; }
+
+    public UserItem Item { get; set; }
+    public long UserId { get; set; } = 0;
     public GuildStorageItem() { }
 
     public GuildStorageItem(BinaryReader reader)

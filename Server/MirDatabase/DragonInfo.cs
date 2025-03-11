@@ -198,6 +198,7 @@ namespace Server.MirDatabase
             }
         }
 
+        [NotMapped]
         public class DropInfo
         {
             public int Chance;

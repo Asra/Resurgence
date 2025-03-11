@@ -1,26 +1,34 @@
 ﻿using Server.MirDatabase;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Server.MirEnvir
 {
+    [Table("MailInfo")]
     public class MailInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
-        public ulong MailID;
+        public ulong MailID { get; set; }
 
-        public string Sender;
+        public string Sender { get; set; }
 
-        public int RecipientIndex;
-        public CharacterInfo RecipientInfo;
+        public int RecipientIndex { get; set; }
+        public CharacterInfo RecipientInfo { get; set; }
 
-        public string Message = string.Empty;
-        public uint Gold = 0;
-        public List<UserItem> Items = new List<UserItem>();
+        public string Message { get; set; } = string.Empty;
+        public uint Gold { get; set; } = 0;
+        public List<UserItem> Items { get; set; } = new List<UserItem>();
 
-        public DateTime DateSent, DateOpened;
+        public DateTime DateSent { get; set; }
+        public DateTime DateOpened { get; set; }
 
         public bool Sent
         {
@@ -32,16 +40,18 @@ namespace Server.MirEnvir
             get { return DateOpened > DateTime.MinValue; }
         }
 
-        public bool Locked;
+        public bool Locked { get; set; }
 
-        public bool Collected;
+        public bool Collected { get; set; }
 
         public bool Parcel //parcel if item contains gold or items.
         {
             get { return Gold > 0 || Items.Count > 0; }
         }
 
-        public bool CanReply;
+        public bool CanReply { get; set; }
+
+        public MailInfo() { }
 
         public MailInfo(int recipientIndex, bool canReply = false)
         {

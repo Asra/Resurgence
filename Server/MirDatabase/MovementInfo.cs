@@ -5,15 +5,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server.MirDatabase
 {
+    [Table("MovementInfos")]
     public class MovementInfo
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; } // Primary Key
+        public int Id { get; set; }
 
         public int MapIndex { get; set; }
 
-        // Store Source and Destination as X, Y values
         public int SourceX { get; set; }
         public int SourceY { get; set; }
         public int DestinationX { get; set; }
@@ -26,7 +26,6 @@ namespace Server.MirDatabase
         public int ConquestIndex { get; set; }
         public int Icon { get; set; }
 
-        // NotMapped property to allow using System.Drawing.Point
         [NotMapped]
         public System.Drawing.Point Source
         {
@@ -49,10 +48,7 @@ namespace Server.MirDatabase
             }
         }
 
-        public MovementInfo()
-        {
-
-        }
+        public MovementInfo() { }
 
         public MovementInfo(BinaryReader reader)
         {

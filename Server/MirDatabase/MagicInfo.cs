@@ -8,6 +8,7 @@ namespace Server.MirDatabase
     [Table("MagicInfo")]
     public class MagicInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
@@ -102,20 +103,28 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("UserMagic")]
     public class UserMagic
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
-        public Spell Spell;
-        public MagicInfo Info;
+        public Spell Spell { get; set; }
+        public MagicInfo Info { get; set; }
 
-        public byte Level, Key;
-        public ushort Experience;
-        public bool IsTempSpell;
-        public long CastTime;
+        public byte Level { get; set; }
+        public byte Key { get; set; }
+        public ushort Experience { get; set; }
+        public bool IsTempSpell { get; set; }
+        public long CastTime { get; set; }
+
+        public UserMagic() { }
 
         private MagicInfo GetMagicInfo(Spell spell)
         {

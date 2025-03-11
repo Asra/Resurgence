@@ -1,29 +1,39 @@
 ﻿using Server.MirObjects;
 using Server.MirEnvir;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Server.MirDatabase
 {
+
+    [Table("QuestProgressInfo")]
     public class QuestProgressInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
+        
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
+        [NotMapped]
         public PlayerObject Owner;
 
-        public int Index;
+        public int Index { get; set; }
 
-        public QuestInfo Info;
+        public QuestInfo Info { get; set; }
 
-        public DateTime StartDateTime = DateTime.MinValue;
-        public DateTime EndDateTime = DateTime.MaxValue;
+        public DateTime StartDateTime { get; set; } = DateTime.MinValue;
+        public DateTime EndDateTime { get; set; } = DateTime.MaxValue;
 
-        public List<QuestKillTaskProgress> KillTaskCount = new List<QuestKillTaskProgress>();
-        public List<QuestItemTaskProgress> ItemTaskCount = new List<QuestItemTaskProgress>();
-        public List<QuestFlagTaskProgress> FlagTaskSet = new List<QuestFlagTaskProgress>();
+        public List<QuestKillTaskProgress> KillTaskCount { get; set; } = new List<QuestKillTaskProgress>();
+        public List<QuestItemTaskProgress> ItemTaskCount { get; set; } = new List<QuestItemTaskProgress>();
+        public List<QuestFlagTaskProgress> FlagTaskSet { get; set; } = new List<QuestFlagTaskProgress>();
 
-        public List<string> TaskList = new List<string>();
+        public List<string> TaskList { get; set; } = new List<string>();
 
         public bool Taken
         {
@@ -39,6 +49,8 @@ namespace Server.MirDatabase
         {
             get { return StartDateTime > Envir.Now.AddDays(-1); }
         }
+
+        public QuestProgressInfo() { }
 
         public QuestProgressInfo(int index)
         {
@@ -536,8 +548,13 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("QuestKillTaskProgress")]
     public class QuestKillTaskProgress
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
         public int MonsterID { get; set; }
         public int Count { get; set; }
         public QuestKillTask Info { get; set; }
@@ -545,8 +562,13 @@ namespace Server.MirDatabase
         public bool Complete { get { return Info != null && Count >= Info.Count; } }
     }
 
+    [Table("QuestItemTaskProgress")]
     public class QuestItemTaskProgress
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        
         public int ItemID { get; set; }
         public int Count { get; set; }
         public QuestItemTask Info { get; set; }
@@ -554,8 +576,13 @@ namespace Server.MirDatabase
         public bool Complete { get { return Info != null && Count >= Info.Count; } }
     }
 
+    [Table("QuestFlagTaskProgress")]
     public class QuestFlagTaskProgress
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        
         public int Number { get; set; }
         public bool State { get; set; }
         public QuestFlagTask Info { get; set; }

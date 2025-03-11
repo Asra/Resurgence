@@ -5824,7 +5824,9 @@ namespace Server.MirObjects
                                 return;
                             }
                             Info.MaximumHeroCount++;
-                            Array.Resize(ref Info.Heroes, Info.MaximumHeroCount);
+                            var heroes = Info.Heroes;
+                            Array.Resize(ref heroes, Info.MaximumHeroCount);
+                            Info.Heroes = heroes;
                             break;
                         case 15: //Increase Hero Inventory
                             ReceiveChat("Must be used on Hero", ChatType.Hint);

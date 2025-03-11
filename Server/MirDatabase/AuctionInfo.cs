@@ -1,26 +1,42 @@
 ﻿using Server.MirEnvir;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server.MirDatabase
 {
+    [Table("Auctions")]
     public class AuctionInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
 
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        
         public ulong AuctionID; 
 
-        public UserItem Item;
-        public DateTime ConsignmentDate;
-        public uint Price, CurrentBid;
+        public virtual UserItem Item { get; set; }
+        
+        public DateTime ConsignmentDate { get; set; }
+        public uint Price { get; set; }
+        public uint CurrentBid { get; set; }
 
-        public int SellerIndex, CurrentBuyerIndex;
-        public CharacterInfo SellerInfo, CurrentBuyerInfo;
+        public int SellerIndex { get; set; }
+        [ForeignKey("SellerIndex")]
+        public virtual CharacterInfo SellerInfo { get; set; }
 
-        public bool Expired, Sold;
+        public int CurrentBuyerIndex { get; set; }
+        [ForeignKey("CurrentBuyerIndex")]
+        public virtual CharacterInfo CurrentBuyerInfo { get; set; }
 
-        public MarketItemType ItemType;
+        public bool Expired { get; set; }
+        public bool Sold { get; set; }
+
+        public MarketItemType ItemType { get; set; }
 
         public AuctionInfo()
         {

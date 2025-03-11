@@ -7,11 +7,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server.MirDatabase
 {
+    [Table("AccountInfo")]
     public class AccountInfo
     {       
+        [NotMapped]
         protected static Envir Envir => Envir.Main;
+        [NotMapped]
         protected static MessageQueue MessageQueue => MessageQueue.Instance;
 
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        
         public int Index { get; set; }
 
         [Required]
@@ -50,26 +57,36 @@ namespace Server.MirDatabase
         public uint Credit { get; set; }
         public bool AdminAccount { get; set; }
 
-        // Navigation properties
         public virtual List<CharacterInfo> Characters { get; set; } = new List<CharacterInfo>();
+
+        private string _storageJson { get; set; }
         [NotMapped]
         private UserItem[] _storage = new UserItem[80];
         [NotMapped]
         public UserItem[] Storage 
         { 
-            get => _storage;
-            set => _storage = value;
+            get
+            {
+                if (_storage == null || _storage.Length == 0)
+                {
+                    _storage = string.IsNullOrEmpty(_storageJson) 
+                        ? new UserItem[80] 
+                        : System.Text.Json.JsonSerializer.Deserialize<UserItem[]>(_storageJson);
+                }
+                return _storage;
+            }
+            set
+            {
+                _storage = value;
+                _storageJson = System.Text.Json.JsonSerializer.Serialize(value);
+            }
         }
         public virtual LinkedList<AuctionInfo> Auctions { get; set; } = new LinkedList<AuctionInfo>();
 
-        // Non-persistent properties
         [NotMapped]
-        public MirConnection Connection { get; set; }
+        public MirConnection Connection;
         
-        public AccountInfo()
-        {
-
-        }
+        public AccountInfo() { }
 
         public AccountInfo(C.NewAccount p)
         {

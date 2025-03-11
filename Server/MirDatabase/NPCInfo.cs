@@ -8,8 +8,10 @@ using System.Text.Json;
 
 namespace Server.MirDatabase
 {
+    [Table("NPCInfo")]
     public class NPCInfo
     {
+        [NotMapped]
         protected static Envir EditEnvir
         {
             get { return Envir.Edit; }

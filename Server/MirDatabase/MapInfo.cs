@@ -8,11 +8,12 @@ namespace Server.MirDatabase
     [Table("MapInfo")]
     public class MapInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
-
+        [NotMapped]
         protected static Envir EditEnvir
         {
             get { return Envir.Edit; }
@@ -22,7 +23,7 @@ namespace Server.MirDatabase
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; } // Primary Key for EF Core
+        public int Id { get; set; }
 
         public string FileName { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
@@ -31,7 +32,7 @@ namespace Server.MirDatabase
         public ushort BigMap { get; set; }
         public ushort Music { get; set; }
 
-        public LightSetting Light { get; set; } // Enum, EF Core will store as integer
+        public LightSetting Light { get; set; }
 
         public byte MapDarkLight { get; set; }
         public byte MineIndex { get; set; }
@@ -71,11 +72,10 @@ namespace Server.MirDatabase
         public virtual List<NPCInfo> NPCs { get; set; } = new List<NPCInfo>();
         public virtual List<MineZone> MineZones { get; set; } = new List<MineZone>();
 
-        // Store ActiveCoords as separate X and Y lists instead of Point
-        [NotMapped] // Exclude from database mapping
+        
+        [NotMapped]
         public List<Point> ActiveCoords { get; set; } = new List<Point>();
 
-        // Serialized JSON storage for ActiveCoords
         public string ActiveCoordsJson
         {
             get => System.Text.Json.JsonSerializer.Serialize(ActiveCoords);
@@ -86,10 +86,7 @@ namespace Server.MirDatabase
 
         public WeatherSetting WeatherParticles { get; set; } = WeatherSetting.None;
 
-        public MapInfo()
-        {
-
-        }
+        public MapInfo(){ }
 
         public MapInfo(BinaryReader reader)
         {

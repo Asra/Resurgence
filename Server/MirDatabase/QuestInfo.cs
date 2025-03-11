@@ -482,23 +482,38 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("QuestKillTask")]
     public class QuestKillTask
     {
-        public MonsterInfo Monster;
-        public int Count;
-        public string Message;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        public MonsterInfo Monster { get; set; }
+        public int Count { get; set; }
+        public string Message { get; set; }
     }
 
+    [Table("QuestItemTask")]
     public class QuestItemTask
     {
-        public ItemInfo Item;
-        public ushort Count;
-        public string Message;
+        [Key]  
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        public ItemInfo Item { get; set; }
+        public ushort Count { get; set; }
+        public string Message { get; set; }
     }
 
+    [Table("QuestFlagTask")]
     public class QuestFlagTask
     {
-        public int Number;
-        public string Message;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        public int Number { get; set; }
+        public string Message { get; set; }
     }
 }

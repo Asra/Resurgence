@@ -61,7 +61,9 @@ namespace Server.MirDatabase
 
             int count = reader.ReadInt32();
 
-            Array.Resize(ref Inventory, count);
+            var inventory = Inventory;
+            Array.Resize(ref inventory, count);
+            Inventory = inventory;
 
             for (int i = 0; i < count; i++)
             {
@@ -163,7 +165,9 @@ namespace Server.MirDatabase
         public override int ResizeInventory()
         {
             if (Inventory.Length >= 42) return Inventory.Length;
-            Array.Resize(ref Inventory, Inventory.Length + 8);
+            var inventory = Inventory;
+            Array.Resize(ref inventory, Inventory.Length + 8);
+            Inventory = inventory;
             return Inventory.Length;
         }
 

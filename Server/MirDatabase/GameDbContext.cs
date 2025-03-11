@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Library.MirDatabase;
+using Server.MirEnvir;
+using Server.MirNetwork;
+using Server.MirObjects;
 
 namespace Server.MirDatabase
 {
@@ -23,6 +26,12 @@ namespace Server.MirDatabase
         public DbSet<GTMap> GTMaps { get; set; }
         public DbSet<DragonInfo> DragonInfos { get; set; }
         public DbSet<QuestInfo> QuestInfos { get; set; }
+        public DbSet<BuffInfo> BuffInfos { get; set; }
+        public DbSet<GuildBuffInfo> GuildBuffInfos { get; set; }
+        public DbSet<MineZone> MineZones { get; set; }
+        public DbSet<AuctionInfo> AuctionInfos { get; set; }
+        public DbSet<GameShopItem> GameShopItems { get; set; }
+        public DbSet<CharacterInfo> CharacterInfos { get; set; }
 
         public GameDbContext() { }
 
@@ -39,6 +48,12 @@ namespace Server.MirDatabase
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Ignore<Envir>();
+            modelBuilder.Ignore<MirConnection>();
+            modelBuilder.Ignore<GuildObject>();
+            modelBuilder.Ignore<MapObject>();
+            modelBuilder.Ignore<PlayerObject>();
 
             modelBuilder.Entity<ItemInfo>()
                 .HasOne(i => i.Stats)

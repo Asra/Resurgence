@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Server.MirDatabase
 {
+    [Table("CharacterInfo")]
     public class CharacterInfo
     {
         [NotMapped]
@@ -17,98 +18,190 @@ namespace Server.MirDatabase
 
         [Key]
         public int Index { get; set; }
-        public string Name;
-        public ushort Level;
-        public MirClass Class;
-        public MirGender Gender;
-        public byte Hair;
-        public int GuildIndex = -1;
+        public string Name { get; set; }
+        public ushort Level { get; set; }
+        public MirClass Class { get; set; }
+        public MirGender Gender { get; set; }
+        public byte Hair { get; set; }
+        public int GuildIndex { get; set; } = -1;
 
-        public string CreationIP;
-        public DateTime CreationDate;
+        public string CreationIP { get; set; }
+        public DateTime CreationDate { get; set; }
 
-        public bool Banned;
-        public string BanReason = string.Empty;
-        public DateTime ExpiryDate;
+        public bool Banned { get; set; }
+        public string BanReason { get; set; } = string.Empty;
+        public DateTime ExpiryDate { get; set; }
 
-        public bool ChatBanned;
-        public DateTime ChatBanExpiryDate;
+        public bool ChatBanned { get; set; }
+        public DateTime ChatBanExpiryDate { get; set; }
 
-        public string LastIP = string.Empty;
-        public DateTime LastLogoutDate;
-        public DateTime LastLoginDate;
+        public string LastIP { get; set; } = string.Empty;
+        public DateTime LastLogoutDate { get; set; }
+        public DateTime LastLoginDate { get; set; }
 
-        public bool Deleted;
-        public DateTime DeleteDate;
+        public bool Deleted { get; set; }
+        public DateTime DeleteDate { get; set; }
 
         //Marriage
-        public int Married = 0;
-        public DateTime MarriedDate;
+        public int Married { get; set; } = 0;
+        public DateTime MarriedDate { get; set; }
 
         //Mentor
-        public int Mentor = 0;
-        public DateTime MentorDate;
-        public bool IsMentor;
-        public long MentorExp = 0;
+        public int Mentor { get; set; } = 0;
+        public DateTime MentorDate { get; set; }
+        public bool IsMentor { get; set; }
+        public long MentorExp { get; set; } = 0;
 
         //Location
-        public int CurrentMapIndex;
-        public Point CurrentLocation;
-        public MirDirection Direction;
-        public int BindMapIndex;
-        public Point BindLocation;
+        public int CurrentMapIndex { get; set; }
+        public MirDirection Direction { get; set; }
+        public int BindMapIndex { get; set; }
 
-        public int HP, MP;
-        public long Experience;
+        [NotMapped]
+        public Point BindLocation 
+        { 
+            get => new Point(BindLocationX, BindLocationY);
+            set
+            {
+                BindLocationX = value.X;
+                BindLocationY = value.Y;
+            }
+        }
 
-        public AttackMode AMode;
-        public PetMode PMode;
-        public bool AllowGroup;
-        public bool AllowTrade;
-        public bool AllowObserve;
+        [NotMapped]
+        public Point CurrentLocation 
+        { 
+            get => new Point(CurrentLocationX, CurrentLocationY);
+            set
+            {
+                CurrentLocationX = value.X;
+                CurrentLocationY = value.Y;
+            }
+        }
 
-        public int PKPoints;
+        // Add these properties to store in database
+        public int BindLocationX { get; set; }
+        public int BindLocationY { get; set; }
+        public int CurrentLocationX { get; set; }
+        public int CurrentLocationY { get; set; }
 
-        public bool NewDay;
+        public int HP { get; set; }
+        public int MP { get; set; }
+        public long Experience { get; set; }
 
-        public bool Thrusting, HalfMoon, CrossHalfMoon;
-        public bool DoubleSlash;
-        public byte MentalState;
-        public byte MentalStateLvl;
+        public AttackMode AMode { get; set; }
+        public PetMode PMode { get; set; }
+        public bool AllowGroup { get; set; }
+        public bool AllowTrade { get; set; }
+        public bool AllowObserve { get; set; }
 
-        public UserItem[] Inventory = new UserItem[46], Equipment = new UserItem[14], Trade = new UserItem[10], QuestInventory = new UserItem[40], Refine = new UserItem[16];
-        public List<ItemRentalInformation> RentedItems = new List<ItemRentalInformation>();
-        public List<ItemRentalInformation> RentedItemsToRemove = new List<ItemRentalInformation>();
-        public bool HasRentedItem;
-        public UserItem CurrentRefine = null;
-        public long CollectTime = 0;
-        public List<UserMagic> Magics = new List<UserMagic>();
-        public List<PetInfo> Pets = new List<PetInfo>();
-        public List<Buff> Buffs = new List<Buff>();
-        public List<Poison> Poisons = new List<Poison>();
-        public List<MailInfo> Mail = new List<MailInfo>();
-        public List<FriendInfo> Friends = new List<FriendInfo>();
+        public int PKPoints { get; set; }
 
-        public List<UserIntelligentCreature> IntelligentCreatures = new List<UserIntelligentCreature>();
-        public int PearlCount;
+        public bool NewDay { get; set; }
 
-        public List<QuestProgressInfo> CurrentQuests = new List<QuestProgressInfo>();
-        public List<int> CompletedQuests = new List<int>();
+        public bool Thrusting { get; set; }
+        public bool HalfMoon { get; set; }
+        public bool CrossHalfMoon { get; set; }
+        public bool DoubleSlash { get; set; }
+        public byte MentalState { get; set; }
+        public byte MentalStateLvl { get; set; }
 
-        public bool[] Flags = new bool[Globals.FlagIndexCount];
+        private string _inventoryJson { get; set; }
+        private string _equipmentJson { get; set; }
+        private string _tradeJson { get; set; }
+        private string _questInventoryJson { get; set; }
+        private string _refineJson { get; set; }
 
-        public AccountInfo AccountInfo;
-        public PlayerObject Player;
-        public MountInfo Mount;
+        [NotMapped]
+        public UserItem[] Inventory
+        {
+            get => string.IsNullOrEmpty(_inventoryJson) 
+                ? new UserItem[46] 
+                : System.Text.Json.JsonSerializer.Deserialize<UserItem[]>(_inventoryJson);
+            set => _inventoryJson = System.Text.Json.JsonSerializer.Serialize(value);
+        }
 
-        public Dictionary<int, int> GSpurchases = new Dictionary<int, int>();
+        [NotMapped]
+        public UserItem[] Equipment
+        {
+            get => string.IsNullOrEmpty(_equipmentJson) 
+                ? new UserItem[14] 
+                : System.Text.Json.JsonSerializer.Deserialize<UserItem[]>(_equipmentJson);
+            set => _equipmentJson = System.Text.Json.JsonSerializer.Serialize(value);
+        }
+
+        [NotMapped]
+        public UserItem[] Trade
+        {
+            get => string.IsNullOrEmpty(_tradeJson) 
+                ? new UserItem[10] 
+                : System.Text.Json.JsonSerializer.Deserialize<UserItem[]>(_tradeJson);
+            set => _tradeJson = System.Text.Json.JsonSerializer.Serialize(value);
+        }
+
+        [NotMapped]
+        public UserItem[] QuestInventory
+        {
+            get => string.IsNullOrEmpty(_questInventoryJson) 
+                ? new UserItem[40] 
+                : System.Text.Json.JsonSerializer.Deserialize<UserItem[]>(_questInventoryJson);
+            set => _questInventoryJson = System.Text.Json.JsonSerializer.Serialize(value);
+        }
+
+        [NotMapped]
+        public UserItem[] Refine
+        {
+            get => string.IsNullOrEmpty(_refineJson) 
+                ? new UserItem[16] 
+                : System.Text.Json.JsonSerializer.Deserialize<UserItem[]>(_refineJson);
+            set => _refineJson = System.Text.Json.JsonSerializer.Serialize(value);
+        }
+        
+        public List<ItemRentalInformation> RentedItems { get; set; } = new List<ItemRentalInformation>();
+        public List<ItemRentalInformation> RentedItemsToRemove { get; set; } = new List<ItemRentalInformation>();
+        public bool HasRentedItem { get; set; }
+        public UserItem CurrentRefine { get; set; }
+        public long CollectTime { get; set; }
+        public List<UserMagic> Magics { get; set; } = new List<UserMagic>();
+        public List<PetInfo> Pets { get; set; } = new List<PetInfo>();
+        public List<Buff> Buffs { get; set; } = new List<Buff>();
+        [NotMapped]
+        public List<Poison> Poisons { get; set; } = new List<Poison>();
+        public List<MailInfo> Mail { get; set; } = new List<MailInfo>();
+        public List<FriendInfo> Friends { get; set; } = new List<FriendInfo>();
+
+        public List<UserIntelligentCreature> IntelligentCreatures { get; set; } = new List<UserIntelligentCreature>();
+        public int PearlCount { get; set; }
+
+        public List<QuestProgressInfo> CurrentQuests { get; set; } = new List<QuestProgressInfo>();
+        public List<int> CompletedQuests { get; set; } = new List<int>();
+
+        public bool[] Flags { get; set; } = new bool[Globals.FlagIndexCount];
+
+        public AccountInfo AccountInfo { get; set; }
+        public PlayerObject Player { get; set; }
+        public MountInfo Mount { get; set; }
+
+        [NotMapped]
+        public Dictionary<int, int> GSpurchases { get; set; } = new Dictionary<int, int>();
+
+        [NotMapped]
         public int[] Rank = new int[2];//dont save this in db!(and dont send it to clients :p)
         
-        public int MaximumHeroCount = 1;
-        public HeroInfo[] Heroes;
-        public int CurrentHeroIndex;
-        public bool HeroSpawned;
-        public HeroBehaviour HeroBehaviour;
+        public int MaximumHeroCount { get; set; } = 1;
+        private string _heroesJson { get; set; }
+
+        [NotMapped]
+        public HeroInfo[] Heroes
+        {
+            get => string.IsNullOrEmpty(_heroesJson) 
+                ? new HeroInfo[MaximumHeroCount] 
+                : System.Text.Json.JsonSerializer.Deserialize<HeroInfo[]>(_heroesJson);
+            set => _heroesJson = System.Text.Json.JsonSerializer.Serialize(value);
+        }
+        public int CurrentHeroIndex { get; set; }
+        public bool HeroSpawned { get; set; }
+        public HeroBehaviour HeroBehaviour { get; set; }
 
         public CharacterInfo() { }
 
@@ -193,7 +286,9 @@ namespace Server.MirDatabase
 
             int count = reader.ReadInt32();
 
-            Array.Resize(ref Inventory, count);
+            var inventory = Inventory;
+            Array.Resize(ref inventory, count);
+            Inventory = inventory;
 
             for (int i = 0; i < count; i++)
             {
@@ -597,27 +692,39 @@ namespace Server.MirDatabase
         {
             if (Inventory.Length >= 86) return Inventory.Length;
 
-            if (Inventory.Length == 46)
+            var tempInventory = Inventory;
+
+            if (tempInventory.Length == 46)
             {
-                Array.Resize(ref Inventory, Inventory.Length + 8);
+                Array.Resize(ref tempInventory, tempInventory.Length + 8);
             }
             else
             {
-                Array.Resize(ref Inventory, Inventory.Length + 4);
+                Array.Resize(ref tempInventory, tempInventory.Length + 4);
             }
+
+            Inventory = tempInventory;
 
             return Inventory.Length;
         }
     }
 
+    [Table("PetInfo")]
     public class PetInfo
     {
-        public int MonsterIndex;
-        public int HP;
-        public uint Experience;
-        public byte Level, MaxPetLevel;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
-        public long TameTime;
+        public int MonsterIndex { get; set; }
+        public int HP { get; set; }
+        public uint Experience { get; set; }
+        public byte Level { get; set; }
+        public byte MaxPetLevel { get; set; }
+
+        public long TameTime { get; set; }
+
+        public PetInfo() { }
 
         public PetInfo(MonsterObject ob)
         {
@@ -657,10 +764,16 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("MountInfo")]
     public class MountInfo
     {
-        public HumanObject Player;
-        public short MountType = -1;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        [NotMapped]
+        public HumanObject Player { get; set; }
+        public short MountType { get; set; } = -1;
 
         public bool CanRide
         {
@@ -699,6 +812,7 @@ namespace Server.MirDatabase
             get { return Player.Info.Equipment[(int)EquipmentSlot.Mount].Slots; }
         }
 
+        public MountInfo() { }
 
         public MountInfo(HumanObject ob)
         {
@@ -706,14 +820,20 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("FriendInfo")]
     public class FriendInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
 
-        public int Index;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        public int Index { get; set; }
 
         private CharacterInfo _Info;
         public CharacterInfo Info
@@ -729,8 +849,10 @@ namespace Server.MirDatabase
             }
         }
 
-        public bool Blocked;
-        public string Memo;
+        public bool Blocked { get; set; }
+        public string Memo { get; set; }
+
+        public FriendInfo() { }
 
         public FriendInfo(CharacterInfo info, bool blocked) 
         {

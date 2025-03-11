@@ -1,27 +1,34 @@
 ﻿using Server.MirEnvir;
 using Server.MirObjects;
 using Server.MirObjects.Monsters;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server.MirDatabase
 {
+    [Table("ConquestGuildInfo")]
     public class ConquestGuildInfo
     {
-        public List<ConquestGuildArcherInfo> ArcherList = new List<ConquestGuildArcherInfo>();
-        public List<ConquestGuildGateInfo> GateList = new List<ConquestGuildGateInfo>();
-        public List<ConquestGuildWallInfo> WallList = new List<ConquestGuildWallInfo>();
-        public List<ConquestGuildSiegeInfo> SiegeList = new List<ConquestGuildSiegeInfo>();
-        public List<ConquestGuildFlagInfo> FlagList = new List<ConquestGuildFlagInfo>();
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; } = 0;
 
-        public Dictionary<ConquestGuildFlagInfo, Dictionary<GuildObject, int>> ControlPoints = new Dictionary<ConquestGuildFlagInfo, Dictionary<GuildObject, int>>();
+        public List<ConquestGuildArcherInfo> ArcherList { get; set; } = new List<ConquestGuildArcherInfo>();
+        public List<ConquestGuildGateInfo> GateList { get; set; } = new List<ConquestGuildGateInfo>();
+        public List<ConquestGuildWallInfo> WallList { get; set; } = new List<ConquestGuildWallInfo>();
+        public List<ConquestGuildSiegeInfo> SiegeList { get; set; } = new List<ConquestGuildSiegeInfo>();
+        public List<ConquestGuildFlagInfo> FlagList { get; set; } = new List<ConquestGuildFlagInfo>();
 
-        public int Owner = 0;
-        public uint GoldStorage;
-        public int AttackerID;
-        public byte NPCRate = 0;
+        public Dictionary<ConquestGuildFlagInfo, Dictionary<GuildObject, int>> ControlPoints { get; set; } = new Dictionary<ConquestGuildFlagInfo, Dictionary<GuildObject, int>>();
 
-        public ConquestInfo Info;
+        public int Owner { get; set; } = 0;
+        public uint GoldStorage { get; set; }
+        public int AttackerID { get; set; }
+        public byte NPCRate { get; set; } = 0;
 
-        public bool NeedSave = false;
+        public ConquestInfo Info { get; set; }
+
+        public bool NeedSave { get; set; } = false;
 
         public ConquestGuildInfo() { }
 
