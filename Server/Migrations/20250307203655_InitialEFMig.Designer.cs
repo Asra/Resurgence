@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Server.MirDatabase;
 
@@ -10,9 +11,11 @@ using Server.MirDatabase;
 namespace Server.Library.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    partial class GameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250307203655_InitialEFMig")]
+    partial class InitialEFMig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
@@ -39,9 +42,6 @@ namespace Server.Library.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -109,36 +109,6 @@ namespace Server.Library.Migrations
                     b.ToTable("GuildBuffInfo");
                 });
 
-            modelBuilder.Entity("GuildMember", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("GuildRankId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("HasVoted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("LastLogin")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("Online")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GuildRankId");
-
-                    b.ToTable("GuildMember");
-                });
-
             modelBuilder.Entity("GuildRank", b =>
                 {
                     b.Property<int>("Id")
@@ -146,15 +116,6 @@ namespace Server.Library.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("GuildInfoGuildIndex")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Index")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte>("Options")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -271,18 +232,6 @@ namespace Server.Library.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<short>("BindingFlags")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("OwnerName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("RentalLocked")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.ToTable("RentalInformations");
@@ -294,103 +243,9 @@ namespace Server.Library.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("NextSealDate")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
                     b.ToTable("SealedInfos");
-                });
-
-            modelBuilder.Entity("Server.Library.MirDatabase.GTMap", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Begin")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Days")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Index")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Key")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Leader")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Leader2")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Owner")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Price")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GTMaps");
-                });
-
-            modelBuilder.Entity("Server.MirDatabase.DragonInfo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("BodyName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("DropAreaBottomX")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("DropAreaBottomY")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("DropAreaTopX")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("DropAreaTopY")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("Experience")
-                        .HasColumnType("INTEGER");
-
-                    b.PrimitiveCollection<string>("Exps")
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte>("Level")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("LocationX")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("LocationY")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("MapFileName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("MonsterName")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DragonInfo");
                 });
 
             modelBuilder.Entity("Server.MirDatabase.GuildInfo", b =>
@@ -460,7 +315,7 @@ namespace Server.Library.Migrations
 
             modelBuilder.Entity("Server.MirDatabase.HeroInfo", b =>
                 {
-                    b.Property<int>("Index")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -485,7 +340,7 @@ namespace Server.Library.Migrations
                     b.Property<ushort>("SealCount")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("Index");
+                    b.HasKey("Id");
 
                     b.ToTable("HeroInfos");
                 });
@@ -1243,13 +1098,6 @@ namespace Server.Library.Migrations
                     b.Navigation("Stats");
                 });
 
-            modelBuilder.Entity("GuildMember", b =>
-                {
-                    b.HasOne("GuildRank", null)
-                        .WithMany("Members")
-                        .HasForeignKey("GuildRankId");
-                });
-
             modelBuilder.Entity("GuildRank", b =>
                 {
                     b.HasOne("Server.MirDatabase.GuildInfo", null)
@@ -1350,11 +1198,6 @@ namespace Server.Library.Migrations
                     b.Navigation("RentalInformation");
 
                     b.Navigation("SealedInfo");
-                });
-
-            modelBuilder.Entity("GuildRank", b =>
-                {
-                    b.Navigation("Members");
                 });
 
             modelBuilder.Entity("ItemInfo", b =>

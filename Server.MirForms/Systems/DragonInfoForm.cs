@@ -74,7 +74,7 @@ namespace Server
             ActiveControl.BackColor = SystemColors.Window;
 
 
-            Envir.DragonInfo.Location.X = temp;
+            Envir.DragonInfo.LocationX = temp;
         }
 
         private void YTextBox_TextChanged(object sender, EventArgs e)
@@ -90,7 +90,7 @@ namespace Server
             ActiveControl.BackColor = SystemColors.Window;
 
 
-            Envir.DragonInfo.Location.Y = temp;
+            Envir.DragonInfo.LocationY = temp;
         }
 
         private void MonsterNameTextBox_TextChanged(object sender, EventArgs e)
@@ -133,7 +133,7 @@ namespace Server
             ActiveControl.BackColor = SystemColors.Window;
 
 
-            Envir.DragonInfo.DropAreaTop.X = temp;
+            Envir.DragonInfo.DropAreaTopX = temp;
         }
 
         private void DropAreaTopYTextBox_TextChanged(object sender, EventArgs e)
@@ -149,7 +149,7 @@ namespace Server
             ActiveControl.BackColor = SystemColors.Window;
 
 
-            Envir.DragonInfo.DropAreaTop.Y = temp;
+            Envir.DragonInfo.DropAreaTopY = temp;
         }
 
         private void DropAreaBottomXTextBox_TextChanged(object sender, EventArgs e)
@@ -165,7 +165,7 @@ namespace Server
             ActiveControl.BackColor = SystemColors.Window;
 
 
-            Envir.DragonInfo.DropAreaBottom.X = temp;
+            Envir.DragonInfo.DropAreaBottomX = temp;
         }
 
         private void DropAreaBottomYTextBox_TextChanged(object sender, EventArgs e)
@@ -181,7 +181,7 @@ namespace Server
             ActiveControl.BackColor = SystemColors.Window;
 
 
-            Envir.DragonInfo.DropAreaBottom.Y = temp;
+            Envir.DragonInfo.DropAreaBottomY = temp;
         }
 
         private void Level1ExpTextBox_TextChanged(object sender, EventArgs e)

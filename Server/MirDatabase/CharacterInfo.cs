@@ -2,17 +2,21 @@ using System.Drawing;
 ﻿using Server.MirEnvir;
 using Server.MirNetwork;
 using Server.MirObjects;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Server.MirDatabase
 {
     public class CharacterInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
 
-        public int Index;
+        [Key]
+        public int Index { get; set; }
         public string Name;
         public ushort Level;
         public MirClass Class;

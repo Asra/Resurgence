@@ -5,10 +5,10 @@ public class GuildRank
 {
     [Key]
     public int Id { get; set; }
-    public List<GuildMember> Members = new List<GuildMember>();
-    public string Name = "";
-    public int Index = 0;
-    public GuildRankOptions Options = (GuildRankOptions)0;
+    public virtual List<GuildMember> Members { get; set; } = new List<GuildMember>();
+    public string Name { get; set; } = "";
+    public int Index { get; set; } = 0;
+    public GuildRankOptions Options { get; set; } = (GuildRankOptions)0;
 
     public GuildRank() { }
 

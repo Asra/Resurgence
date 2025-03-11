@@ -6,9 +6,6 @@ namespace Server.MirDatabase
 {
     public class HeroInfo : CharacterInfo
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
         public bool AutoPot { get; set; }
 
         public byte Grade { get; set; }
@@ -25,6 +22,7 @@ namespace Server.MirDatabase
 
         public HeroInfo()
         {
+            
         }
 
         public HeroInfo(ClientPackets.NewHero p)

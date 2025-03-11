@@ -1,39 +1,74 @@
 ﻿using Server.MirObjects;
 using System.Text.RegularExpressions;
 using Server.MirEnvir;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Server.MirDatabase
 {
+    [Table("QuestInfo")]    
     public class QuestInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
 
+        [NotMapped]
         protected static Envir EditEnvir
         {
             get { return Envir.Edit; }
         }
 
+        [NotMapped]
         protected static MessageQueue MessageQueue
         {
             get { return MessageQueue.Instance; }
         }
 
-        public int Index;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int Index { get; set; }
 
+        public string Name { get; set; } = string.Empty;
+
+        public string Group { get; set; } = string.Empty;
+
+        public string FileName { get; set; } = string.Empty;
+
+        public string GotoMessage { get; set; } = string.Empty;
+
+        public string KillMessage { get; set; } = string.Empty;
+
+        public string ItemMessage { get; set; } = string.Empty;
+
+        public string FlagMessage { get; set; } = string.Empty;
+
+        public int RequiredMinLevel { get; set; }
+        public int RequiredMaxLevel { get; set; }
+        public int RequiredQuest { get; set; }
+
+        public RequiredClass RequiredClass { get; set; } = RequiredClass.None;
+
+        public QuestType Type { get; set; }
+
+        public int TimeLimitInSeconds { get; set; } = 0;
+
+        [NotMapped]
         public uint NpcIndex;
+        [NotMapped]
         public NPCInfo NpcInfo;
-
+        [NotMapped]
         private uint _finishNpcIndex;
-
+        [NotMapped]
         public uint FinishNpcIndex
         {
             get { return _finishNpcIndex == 0 ? NpcIndex : _finishNpcIndex; }
             set { _finishNpcIndex = value; }
         }
-
+        [NotMapped]
         public NPCObject FinishNPC
         {
             get
@@ -41,42 +76,33 @@ namespace Server.MirDatabase
                 return Envir.NPCs.Single(x => x.ObjectID == FinishNpcIndex);
             }
         }
-
-        public string 
-            Name = string.Empty, 
-            Group = string.Empty, 
-            FileName = string.Empty, 
-            GotoMessage = string.Empty, 
-            KillMessage = string.Empty, 
-            ItemMessage = string.Empty,
-            FlagMessage = string.Empty;
-
+        [NotMapped]
         public List<string> Description = new List<string>();
+        [NotMapped]
         public List<string> TaskDescription = new List<string>();
+        [NotMapped]
         public List<string> ReturnDescription = new List<string>();
+        [NotMapped]
         public List<string> CompletionDescription = new List<string>(); 
-
-        public int RequiredMinLevel, RequiredMaxLevel, RequiredQuest;
-        public RequiredClass RequiredClass = RequiredClass.None;
-
-        public QuestType Type;
-
-        public int TimeLimitInSeconds = 0;
-
+        [NotMapped]
         public List<QuestItemTask> CarryItems = new List<QuestItemTask>(); 
-
+        [NotMapped]
         public List<QuestKillTask> KillTasks = new List<QuestKillTask>();
+        [NotMapped]
         public List<QuestItemTask> ItemTasks = new List<QuestItemTask>();
+        [NotMapped]
         public List<QuestFlagTask> FlagTasks = new List<QuestFlagTask>();
-        //TODO: ZoneTasks
-        //TODO: EscortTasks
-
+        [NotMapped]
         public uint GoldReward;
+        [NotMapped]
         public uint ExpReward;
+        [NotMapped]
         public uint CreditReward;
+        [NotMapped]
         public List<QuestItemReward> FixedRewards = new List<QuestItemReward>();
+        [NotMapped]
         public List<QuestItemReward> SelectRewards = new List<QuestItemReward>();
-
+        [NotMapped]
         private Regex _regexMessage = new Regex("\"([^\"]*)\"");
 
 
@@ -432,9 +458,9 @@ namespace Server.MirDatabase
             info.ItemMessage = data[6];
             info.FlagMessage = data[7];
 
-            int.TryParse(data[8], out info.RequiredMinLevel);
-            int.TryParse(data[9], out info.RequiredMaxLevel);
-            int.TryParse(data[10], out info.RequiredQuest);
+            info.RequiredMinLevel = int.TryParse(data[8], out int minLevel) ? minLevel : 0;
+            info.RequiredMaxLevel = int.TryParse(data[9], out int maxLevel) ? maxLevel : 0;
+            info.RequiredQuest = int.TryParse(data[10], out int requiredQuest) ? requiredQuest : 0;
 
             byte.TryParse(data[11], out temp);
 

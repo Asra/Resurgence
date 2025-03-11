@@ -1,54 +1,67 @@
 ﻿using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 
 public class ItemInfo
 {
-    public int Index;
-    public string Name = string.Empty;
-    public ItemType Type;
-    public ItemGrade Grade;
-    public RequiredType RequiredType = RequiredType.Level;
-    public RequiredClass RequiredClass = RequiredClass.None;
-    public RequiredGender RequiredGender = RequiredGender.None;
-    public ItemSet Set;
+    [Key]
+    public int Index { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public ItemType Type { get; set; }
+    public ItemGrade Grade { get; set; }
+    public RequiredType RequiredType { get; set; } = RequiredType.Level;
+    public RequiredClass RequiredClass { get; set; } = RequiredClass.None;
+    public RequiredGender RequiredGender { get; set; } = RequiredGender.None;
+    public ItemSet Set { get; set; }
 
-    public short Shape;
-    public byte Weight, Light, RequiredAmount;
+    public short Shape { get; set; }
+    public byte Weight { get; set; }
+    public byte Light { get; set; }
+    public byte RequiredAmount { get; set; }
 
-    public ushort Image, Durability;
+    public ushort Image { get; set; }
+    public ushort Durability { get; set; }
 
-    public uint Price; 
-    public ushort StackSize = 1;
+    public uint Price { get; set; }
+    public ushort StackSize { get; set; } = 1;
 
-    public bool StartItem;
-    public byte Effect;
+    public bool StartItem { get; set; }
+    public byte Effect { get; set; }
 
-    public bool NeedIdentify, ShowGroupPickup, GlobalDropNotify;
-    public bool ClassBased;
-    public bool LevelBased;
-    public bool CanMine;
-    public bool CanFastRun;
-    public bool CanAwakening;
+    public bool NeedIdentify { get; set; }
+    public bool ShowGroupPickup { get; set; }
+    public bool GlobalDropNotify { get; set; }
+    public bool ClassBased { get; set; }
+    public bool LevelBased { get; set; }
+    public bool CanMine { get; set; }
+    public bool CanFastRun { get; set; }
+    public bool CanAwakening { get; set; }
 
-    public BindMode Bind = BindMode.None;
+    public BindMode Bind { get; set; } = BindMode.None;
 
-    public SpecialItemMode Unique = SpecialItemMode.None;
-    public byte RandomStatsId;
-    public RandomItemStat RandomStats;
-    public string ToolTip = string.Empty;
+    public SpecialItemMode Unique { get; set; } = SpecialItemMode.None;
+    public byte RandomStatsId { get; set; }
+    
+    [NotMapped]
+    public RandomItemStat RandomStats { get; set; }
+    
+    public string ToolTip { get; set; } = string.Empty;
 
-    public byte Slots;
+    public byte Slots { get; set; }
 
-    public Stats Stats;
+    public virtual Stats Stats { get; set; }
 
-    public bool IsConsumable
-    {
-        get { return Type == ItemType.Potion || Type == ItemType.Scroll || Type == ItemType.Food || Type == ItemType.Transform || Type == ItemType.Script || Type == ItemType.SealedHero; }
-    }
-    public bool IsFishingRod
-    {
-        get { return Globals.FishingRodShapes.Contains(Shape); }
-    }
+    [NotMapped]
+    public bool IsConsumable => Type == ItemType.Potion || Type == ItemType.Scroll || 
+                               Type == ItemType.Food || Type == ItemType.Transform || 
+                               Type == ItemType.Script || Type == ItemType.SealedHero;
 
+    [NotMapped]
+    public bool IsFishingRod => Globals.FishingRodShapes.Contains(Shape);
+
+    [NotMapped]
     public string FriendlyName
     {
         get
@@ -143,7 +156,6 @@ public class ItemInfo
             Stats[Stat.CriticalDamage] = reader.ReadByte();
         }
 
-
         byte bools = reader.ReadByte();
         NeedIdentify = (bools & 0x01) == 0x01;
         ShowGroupPickup = (bools & 0x02) == 0x02;
@@ -203,8 +215,6 @@ public class ItemInfo
         }
     }
 
-
-
     public void Save(BinaryWriter writer)
     {
         writer.Write(Index);
@@ -254,7 +264,6 @@ public class ItemInfo
         writer.Write(ToolTip != null);
         if (ToolTip != null)
             writer.Write(ToolTip);
-
     }
 
     public static ItemInfo FromText(string text)
@@ -271,43 +280,59 @@ public class ItemInfo
     {
         return string.Format("{0}: {1}", Index, Name);
     }
-
 }
 
 public class UserItem
 {
-    public ulong UniqueID;
-    public int ItemIndex;
+    [Key]
+    public ulong UniqueID { get; set; }
+    public int ItemIndex { get; set; }
 
-    public ItemInfo Info;
-    public ushort CurrentDura, MaxDura;
-    public ushort Count = 1,
-                GemCount = 0;
+    [ForeignKey("ItemIndex")]
+    public virtual ItemInfo Info { get; set; }
+    
+    public ushort CurrentDura { get; set; }
+    public ushort MaxDura { get; set; }
+    public ushort Count { get; set; } = 1;
+    public ushort GemCount { get; set; } = 0;
 
-    public RefinedValue RefinedValue = RefinedValue.None;
-    public byte RefineAdded = 0;
-    public int RefineSuccessChance = 0;
+    public RefinedValue RefinedValue { get; set; } = RefinedValue.None;
+    public byte RefineAdded { get; set; }
+    public int RefineSuccessChance { get; set; }
 
-    public bool DuraChanged;
-    public int SoulBoundId = -1;
-    public bool Identified = false;
-    public bool Cursed = false;
+    public bool DuraChanged { get; set; }
+    public int SoulBoundId { get; set; } = -1;
+    public bool Identified { get; set; }
+    public bool Cursed { get; set; }
 
-    public int WeddingRing = -1;
+    public int WeddingRing { get; set; } = -1;
 
-    public UserItem[] Slots = new UserItem[0];
+    public string SlotsJson { get; set; }
 
-    public DateTime BuybackExpiryDate;
+    private UserItem[] _slots = new UserItem[0];
 
-    public ExpireInfo ExpireInfo;
-    public RentalInformation RentalInformation;
-    public SealedInfo SealedInfo;
+    [NotMapped]
+    public UserItem[] Slots
+    {
+        get => string.IsNullOrEmpty(SlotsJson) ? _slots : (_slots = JsonSerializer.Deserialize<UserItem[]>(SlotsJson));
+        set
+        {
+            _slots = value;
+            SlotsJson = JsonSerializer.Serialize(value);
+        }
+    }
 
-    public bool IsShopItem;
+    public DateTime BuybackExpiryDate { get; set; }
 
-    public Awake Awake = new Awake();
+    public virtual ExpireInfo ExpireInfo { get; set; }
+    public virtual RentalInformation RentalInformation { get; set; }
+    public virtual SealedInfo SealedInfo { get; set; }
 
-    public Stats AddedStats;
+    public bool IsShopItem { get; set; }
+    public bool GMMade { get; set; }
+
+    public virtual Awake Awake { get; set; } = new Awake();
+    public virtual Stats AddedStats { get; set; }
 
     public bool IsAdded
     {
@@ -324,7 +349,10 @@ public class UserItem
         get { return Count > 1 ? string.Format("{0} ({1})", Info.FriendlyName, Count) : Info.FriendlyName; }
     }
 
-    public bool GMMade { get; set; }
+    public UserItem()
+    {
+
+    }
 
     public UserItem(ItemInfo info)
     {
@@ -484,7 +512,6 @@ public class UserItem
 
         writer.Write(GemCount);
 
-
         AddedStats.Save(writer);
         Awake.Save(writer);
 
@@ -519,7 +546,6 @@ public class UserItem
 
         uint p = Info.Price;
 
-
         if (Info.Durability > 0)
         {
             float r = ((Info.Price / 2F) / Info.Durability);
@@ -534,9 +560,7 @@ public class UserItem
             p = (uint)Math.Floor(p / 2F + ((p / 2F) * r) + Info.Price / 2F);
         }
 
-
         p = (uint)(p * (AddedStats.Count * 0.1F + 1F));
-
 
         return p * Count;
     }
@@ -632,10 +656,11 @@ public class UserItem
         }
 
         if (size == null && Info == null) return;
-        if (size != null && size == Slots.Length) return;
-        if (size == null && Info != null && Info.Slots == Slots.Length) return;
+        if (size != null && size == _slots.Length) return;
+        if (size == null && Info != null && Info.Slots == _slots.Length) return;
 
-        Array.Resize(ref Slots, size ?? Info.Slots);
+        Array.Resize(ref _slots, size ?? Info.Slots);
+        Slots = _slots;
     }
 
     public ushort Image
@@ -705,12 +730,14 @@ public class UserItem
 
         return item;
     }
-
 }
 
 public class ExpireInfo
 {
-    public DateTime ExpiryDate;
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+    public DateTime ExpiryDate { get; set; }
 
     public ExpireInfo() { }
 
@@ -727,8 +754,11 @@ public class ExpireInfo
 
 public class SealedInfo
 {
-    public DateTime ExpiryDate;
-    public DateTime NextSealDate;
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+    public DateTime ExpiryDate { get; set; }
+    public DateTime NextSealDate{ get; set; }
 
     public SealedInfo() { }
 
@@ -751,10 +781,13 @@ public class SealedInfo
 
 public class RentalInformation
 {
-    public string OwnerName;
-    public BindMode BindingFlags = BindMode.None;
-    public DateTime ExpiryDate;
-    public bool RentalLocked;
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+    public string OwnerName { get; set; }
+    public BindMode BindingFlags { get; set; } = BindMode.None;
+    public DateTime ExpiryDate{ get; set; }
+    public bool RentalLocked{ get; set; }
 
     public RentalInformation() { }
 
@@ -777,21 +810,28 @@ public class RentalInformation
 
 public class GameShopItem
 {
-    public int ItemIndex;
-    public int GIndex;
-    public ItemInfo Info;
-    public uint GoldPrice = 0;
-    public uint CreditPrice = 0;
-    public ushort Count = 1;
-    public string Class = "";
-    public string Category = "";
-    public int Stock = 0;
-    public bool iStock = false;
-    public bool Deal = false;
-    public bool TopItem = false;
-    public DateTime Date;
-    public bool CanBuyGold = false;
-    public bool CanBuyCredit = false;
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+
+    public int ItemIndex { get; set; }
+    public int GIndex { get; set; }
+
+    [ForeignKey("ItemIndex")]
+    public virtual ItemInfo Info { get; set; }
+
+    public uint GoldPrice { get; set; }
+    public uint CreditPrice { get; set; }
+    public ushort Count { get; set; } = 1;
+    public string Class { get; set; } = "";
+    public string Category { get; set; } = "";
+    public int Stock { get; set; }
+    public bool iStock { get; set; }
+    public bool Deal { get; set; }
+    public bool TopItem { get; set; }
+    public DateTime Date { get; set; }
+    public bool CanBuyGold { get; set; }
+    public bool CanBuyCredit { get; set; }
 
     public GameShopItem()
     {
@@ -874,19 +914,32 @@ public class GameShopItem
 public class Awake
 {
     //Awake Option
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+    [NotMapped]
     public static byte AwakeSuccessRate = 70;
+    [NotMapped]
     public static byte AwakeHitRate = 70;
+    [NotMapped]
     public static int MaxAwakeLevel = 5;
+    [NotMapped]
     public static byte Awake_WeaponRate = 1;
+    [NotMapped]
     public static byte Awake_HelmetRate = 1;
+    [NotMapped]
     public static byte Awake_ArmorRate = 5;
+    [NotMapped]
     public static byte AwakeChanceMin = 1;
+    [NotMapped]
     public static float[] AwakeMaterialRate = new float[4] { 1.0F, 1.0F, 1.0F, 1.0F };
+    [NotMapped] 
     public static byte[] AwakeChanceMax = new byte[4] { 1, 2, 3, 4 };
+    [NotMapped]
     public static List<List<byte>[]> AwakeMaterials = new List<List<byte>[]>();
 
-    public AwakeType Type = AwakeType.None;
-    readonly List<byte> listAwake = new List<byte>();
+    public AwakeType Type { get; set; } = AwakeType.None;
+    public virtual List<byte> listAwake { get; set; } = new List<byte>();
 
     public Awake() { }
 
@@ -1086,13 +1139,15 @@ public class Awake
     }
 }
 
-
 public class ItemRentalInformation
 {
-    public ulong ItemId;
-    public string ItemName;
-    public string RentingPlayerName;
-    public DateTime ItemReturnDate;
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+    public ulong ItemId { get; set; }
+    public string ItemName { get; set; }
+    public string RentingPlayerName { get; set; }
+    public DateTime ItemReturnDate { get; set; }
 
     public ItemRentalInformation() { }
 
@@ -1112,7 +1167,6 @@ public class ItemRentalInformation
         writer.Write(ItemReturnDate.ToBinary());
     }
 }
-
 
 public class ItemSets
 {
@@ -1174,7 +1228,6 @@ public class ItemSets
         }
     }
 }
-
 
 public class RandomItemStat
 {
@@ -1421,9 +1474,10 @@ public class RandomItemStat
 
 public class ChatItem
 {
-    public ulong UniqueID;
-    public string Title;
-    public MirGridType Grid;
+    [Key]
+    public ulong UniqueID { get; set; }
+    public string Title { get; set; }
+    public MirGridType Grid { get; set; }
 
     public string RegexInternalName
     {

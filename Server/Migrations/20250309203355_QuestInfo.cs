@@ -5,7 +5,7 @@
 namespace Server.Library.Migrations
 {
     /// <inheritdoc />
-    public partial class HeroGuildMagic : Migration
+    public partial class QuestInfo : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

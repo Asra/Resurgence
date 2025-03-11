@@ -1,28 +1,84 @@
 using System.Drawing;
 ﻿using Server.MirEnvir;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace Server.MirDatabase
 {
+    [Table("DragonInfo")]
     public class DragonInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
 
+        [NotMapped]
         protected static MessageQueue MessageQueue
         {
             get { return MessageQueue.Instance; }
         }
 
-        public bool Enabled;
-        public string MapFileName, MonsterName, BodyName;
-        public Point Location, DropAreaTop, DropAreaBottom;
-        public List<DropInfo>[] Drops = new List<DropInfo>[Globals.MaxDragonLevel];
-        public long[] Exps = new long[Globals.MaxDragonLevel - 1];
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
-        public byte Level;
-        public long Experience;
+        public bool Enabled { get; set; }
+        public string MapFileName { get; set; }
+        public string MonsterName { get; set; }
+        public string BodyName { get; set; }
+
+        public int LocationX { get; set; }
+        public int LocationY { get; set; }
+        public int DropAreaTopX { get; set; }
+        public int DropAreaTopY { get; set; }
+        public int DropAreaBottomX { get; set; }
+        public int DropAreaBottomY { get; set; }
+
+
+        //Drop infos are loaded from files
+        [NotMapped]
+        public List<DropInfo>[] Drops = new List<DropInfo>[Globals.MaxDragonLevel];
+        public long[] Exps { get; set; } = new long[Globals.MaxDragonLevel - 1];
+
+        public byte Level { get; set; }
+        public long Experience { get; set; }
+
+        [NotMapped]
+        public Point Location
+        {
+            get => new Point(LocationX, LocationY);
+            set
+            {
+                LocationX = value.X;
+                LocationY = value.Y;
+            }
+        }
+
+        [NotMapped]
+        public Point DropAreaTop
+        {
+            get => new Point(DropAreaTopX, DropAreaTopY);
+            set
+            {
+                DropAreaTopX = value.X;
+                DropAreaTopY = value.Y;
+            }
+        }
+
+        [NotMapped]
+        public Point DropAreaBottom
+        {
+            get => new Point(DropAreaBottomX, DropAreaBottomY);
+            set
+            {
+                DropAreaBottomX = value.X;
+                DropAreaBottomY = value.Y;
+            }
+        }
 
         public DragonInfo()
         {

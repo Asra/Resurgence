@@ -11,14 +11,45 @@ using Server.MirDatabase;
 namespace Server.Library.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20250305204323_StatsData")]
-    partial class StatsData
+    [Migration("20250309191438_MoreMigs")]
+    partial class MoreMigs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
+
+            modelBuilder.Entity("Awake", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.PrimitiveCollection<string>("listAwake")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Awakes");
+                });
+
+            modelBuilder.Entity("ExpireInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExpireInfos");
+                });
 
             modelBuilder.Entity("GuildBuff", b =>
                 {
@@ -81,6 +112,36 @@ namespace Server.Library.Migrations
                     b.ToTable("GuildBuffInfo");
                 });
 
+            modelBuilder.Entity("GuildMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("GuildRankId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasVoted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastLogin")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Online")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuildRankId");
+
+                    b.ToTable("GuildMember");
+                });
+
             modelBuilder.Entity("GuildRank", b =>
                 {
                     b.Property<int>("Id")
@@ -90,11 +151,161 @@ namespace Server.Library.Migrations
                     b.Property<int?>("GuildInfoGuildIndex")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Index")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte>("Options")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GuildInfoGuildIndex");
 
                     b.ToTable("GuildRank");
+                });
+
+            modelBuilder.Entity("ItemInfo", b =>
+                {
+                    b.Property<int>("Index")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<short>("Bind")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("CanAwakening")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("CanFastRun")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("CanMine")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ClassBased")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ushort>("Durability")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("Effect")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("GlobalDropNotify")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("Grade")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ushort>("Image")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("LevelBased")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("Light")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("NeedIdentify")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<uint>("Price")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("RandomStatsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("RequiredAmount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("RequiredClass")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("RequiredGender")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("RequiredType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("Set")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<short>("Shape")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("ShowGroupPickup")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("Slots")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ushort>("StackSize")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("StartItem")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ToolTip")
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<short>("Unique")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("Weight")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Index");
+
+                    b.ToTable("Items");
+                });
+
+            modelBuilder.Entity("RentalInformation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<short>("BindingFlags")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("OwnerName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("RentalLocked")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RentalInformations");
+                });
+
+            modelBuilder.Entity("SealedInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("NextSealDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SealedInfos");
                 });
 
             modelBuilder.Entity("Server.MirDatabase.GuildInfo", b =>
@@ -164,7 +375,7 @@ namespace Server.Library.Migrations
 
             modelBuilder.Entity("Server.MirDatabase.HeroInfo", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("Index")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -189,7 +400,7 @@ namespace Server.Library.Migrations
                     b.Property<ushort>("SealCount")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("Id");
+                    b.HasKey("Index");
 
                     b.ToTable("HeroInfos");
                 });
@@ -716,6 +927,9 @@ namespace Server.Library.Migrations
                     b.Property<int>("ItemDropRatePercent")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("ItemInfoIndex")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("LoverExpRatePercent")
                         .HasColumnType("INTEGER");
 
@@ -820,7 +1034,104 @@ namespace Server.Library.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ItemInfoIndex")
+                        .IsUnique();
+
                     b.ToTable("Stats");
+                });
+
+            modelBuilder.Entity("UserItem", b =>
+                {
+                    b.Property<ulong>("UniqueID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("AddedStatsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("AwakeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("BuybackExpiryDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<ushort>("Count")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ushort>("CurrentDura")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Cursed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("DuraChanged")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ExpireInfoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("GMMade")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ushort>("GemCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Identified")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsShopItem")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ItemIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ushort>("MaxDura")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong?>("ParentItemID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("RefineAdded")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RefineSuccessChance")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("RefinedValue")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("RentalInformationId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("SealedInfoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SlotsJson")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SoulBoundId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("WeddingRing")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("UniqueID");
+
+                    b.HasIndex("AddedStatsId");
+
+                    b.HasIndex("AwakeId");
+
+                    b.HasIndex("ExpireInfoId");
+
+                    b.HasIndex("ItemIndex");
+
+                    b.HasIndex("ParentItemID");
+
+                    b.HasIndex("RentalInformationId");
+
+                    b.HasIndex("SealedInfoId");
+
+                    b.ToTable("UserItems");
                 });
 
             modelBuilder.Entity("GuildBuff", b =>
@@ -845,6 +1156,13 @@ namespace Server.Library.Migrations
                         .HasForeignKey("StatsId");
 
                     b.Navigation("Stats");
+                });
+
+            modelBuilder.Entity("GuildMember", b =>
+                {
+                    b.HasOne("GuildRank", null)
+                        .WithMany("Members")
+                        .HasForeignKey("GuildRankId");
                 });
 
             modelBuilder.Entity("GuildRank", b =>
@@ -897,6 +1215,68 @@ namespace Server.Library.Migrations
                     b.Navigation("Info");
                 });
 
+            modelBuilder.Entity("Stats", b =>
+                {
+                    b.HasOne("ItemInfo", null)
+                        .WithOne("Stats")
+                        .HasForeignKey("Stats", "ItemInfoIndex");
+                });
+
+            modelBuilder.Entity("UserItem", b =>
+                {
+                    b.HasOne("Stats", "AddedStats")
+                        .WithMany()
+                        .HasForeignKey("AddedStatsId");
+
+                    b.HasOne("Awake", "Awake")
+                        .WithMany()
+                        .HasForeignKey("AwakeId");
+
+                    b.HasOne("ExpireInfo", "ExpireInfo")
+                        .WithMany()
+                        .HasForeignKey("ExpireInfoId");
+
+                    b.HasOne("ItemInfo", "Info")
+                        .WithMany()
+                        .HasForeignKey("ItemIndex")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UserItem", null)
+                        .WithMany("Slots")
+                        .HasForeignKey("ParentItemID");
+
+                    b.HasOne("RentalInformation", "RentalInformation")
+                        .WithMany()
+                        .HasForeignKey("RentalInformationId");
+
+                    b.HasOne("SealedInfo", "SealedInfo")
+                        .WithMany()
+                        .HasForeignKey("SealedInfoId");
+
+                    b.Navigation("AddedStats");
+
+                    b.Navigation("Awake");
+
+                    b.Navigation("ExpireInfo");
+
+                    b.Navigation("Info");
+
+                    b.Navigation("RentalInformation");
+
+                    b.Navigation("SealedInfo");
+                });
+
+            modelBuilder.Entity("GuildRank", b =>
+                {
+                    b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("ItemInfo", b =>
+                {
+                    b.Navigation("Stats");
+                });
+
             modelBuilder.Entity("Server.MirDatabase.GuildInfo", b =>
                 {
                     b.Navigation("BuffList");
@@ -915,6 +1295,11 @@ namespace Server.Library.Migrations
                     b.Navigation("Respawns");
 
                     b.Navigation("SafeZones");
+                });
+
+            modelBuilder.Entity("UserItem", b =>
+                {
+                    b.Navigation("Slots");
                 });
 #pragma warning restore 612, 618
         }

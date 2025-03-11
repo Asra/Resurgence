@@ -2,66 +2,70 @@
 using Server.MirEnvir;
 using Server.Utils;
 using C = ClientPackets;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server.MirDatabase
 {
     public class AccountInfo
     {       
-        protected static Envir Envir
-        {
-            get { return Envir.Main; }
-        }
+        protected static Envir Envir => Envir.Main;
         protected static MessageQueue MessageQueue => MessageQueue.Instance;
 
-        public int Index;
+        public int Index { get; set; }
 
-        public string AccountID = string.Empty;
-
-        private string password = string.Empty;
-        public string Password
+        [Required]
+        [StringLength(50)]
+        public string AccountID { get; set; } = string.Empty;
+        
+        private string password { get; set; } = string.Empty;
+        public string Password 
         {
             get { return password; }
             set
             {                
                 Salt = Crypto.GenerateSalt();
                 password = Crypto.HashPassword(value, Salt);
-                
             }
         }
 
-        public byte[] Salt = new byte[24];
+        public byte[] Salt { get; set; } = new byte[24];
+        public string UserName { get; set; } = string.Empty;
+        public DateTime BirthDate { get; set; }
+        public string SecretQuestion { get; set; } = string.Empty;
+        public string SecretAnswer { get; set; } = string.Empty;
+        public string EMailAddress { get; set; } = string.Empty;
+        public string CreationIP { get; set; } = string.Empty;
+        public DateTime CreationDate { get; set; }
+        public bool Banned { get; set; }
+        public bool RequirePasswordChange { get; set; }
+        public string BanReason { get; set; } = string.Empty;
+        public DateTime ExpiryDate { get; set; }
+        public int WrongPasswordCount { get; set; }
+        public string LastIP { get; set; } = string.Empty;
+        public DateTime LastDate { get; set; }
+        public bool HasExpandedStorage { get; set; }
+        public DateTime ExpandedStorageExpiryDate { get; set; }
+        public uint Gold { get; set; }
+        public uint Credit { get; set; }
+        public bool AdminAccount { get; set; }
 
-        public string UserName = string.Empty;
-        public DateTime BirthDate;
-        public string SecretQuestion = string.Empty;
-        public string SecretAnswer = string.Empty;
-        public string EMailAddress = string.Empty;
+        // Navigation properties
+        public virtual List<CharacterInfo> Characters { get; set; } = new List<CharacterInfo>();
+        [NotMapped]
+        private UserItem[] _storage = new UserItem[80];
+        [NotMapped]
+        public UserItem[] Storage 
+        { 
+            get => _storage;
+            set => _storage = value;
+        }
+        public virtual LinkedList<AuctionInfo> Auctions { get; set; } = new LinkedList<AuctionInfo>();
 
-        public string CreationIP = string.Empty;
-        public DateTime CreationDate;
-
-        public bool Banned;
-        public bool RequirePasswordChange;
-        public string BanReason = string.Empty;
-        public DateTime ExpiryDate;
-        public int WrongPasswordCount;
-
-        public string LastIP = string.Empty;
-        public DateTime LastDate;
-
-        public List<CharacterInfo> Characters = new List<CharacterInfo>();
-
-        public UserItem[] Storage = new UserItem[80];
-        public bool HasExpandedStorage;
-        public DateTime ExpandedStorageExpiryDate;
-        public uint Gold;
-        public uint Credit;
-
-        public MirConnection Connection;
+        // Non-persistent properties
+        [NotMapped]
+        public MirConnection Connection { get; set; }
         
-        public LinkedList<AuctionInfo> Auctions = new LinkedList<AuctionInfo>();
-        public bool AdminAccount;
-
         public AccountInfo()
         {
 
@@ -153,7 +157,7 @@ namespace Server.MirDatabase
 
             count = reader.ReadInt32();
 
-            Array.Resize(ref Storage, count);
+            Array.Resize(ref _storage, count);
 
             for (int i = 0; i < count; i++)
             {
@@ -241,7 +245,7 @@ namespace Server.MirDatabase
             if (!HasExpandedStorage)
             {
                 if (Storage.Length == Globals.StorageGridSize)
-                    Array.Resize(ref Storage, Storage.Length + Globals.StorageGridSize);
+                    Array.Resize(ref _storage, _storage.Length + Globals.StorageGridSize);
             }
 
             return Storage.Length;
