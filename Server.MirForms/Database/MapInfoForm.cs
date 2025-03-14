@@ -747,7 +747,7 @@ namespace Server
 
 
             for (int i = 0; i < _selectedSafeZoneInfos.Count; i++)
-                _selectedSafeZoneInfos[i].Location.X = temp;
+                _selectedSafeZoneInfos[i].LocationX = temp;
 
             RefreshSafeZoneList();
         }
@@ -766,7 +766,7 @@ namespace Server
 
 
             for (int i = 0; i < _selectedSafeZoneInfos.Count; i++)
-                _selectedSafeZoneInfos[i].Location.Y = temp;
+                _selectedSafeZoneInfos[i].LocationY = temp;
 
             RefreshSafeZoneList();
         }
@@ -847,7 +847,7 @@ namespace Server
 
 
             for (int i = 0; i < _selectedRespawnInfos.Count; i++)
-                _selectedRespawnInfos[i].Location.X = temp;
+                _selectedRespawnInfos[i].LocationY = temp;
 
             RefreshRespawnList();
         }
@@ -866,7 +866,7 @@ namespace Server
 
 
             for (int i = 0; i < _selectedRespawnInfos.Count; i++)
-                _selectedRespawnInfos[i].Location.Y = temp;
+                _selectedRespawnInfos[i].LocationX = temp;
 
             RefreshRespawnList();
         }
@@ -1030,7 +1030,7 @@ namespace Server
 
 
             for (int i = 0; i < _selectedMovementInfos.Count; i++)
-                _selectedMovementInfos[i].Source.X = temp;
+                _selectedMovementInfos[i].SourceX = temp;
 
             RefreshMovementList();
         }
@@ -1049,7 +1049,7 @@ namespace Server
 
 
             for (int i = 0; i < _selectedMovementInfos.Count; i++)
-                _selectedMovementInfos[i].Source.Y = temp;
+                _selectedMovementInfos[i].SourceY = temp;
 
             RefreshMovementList();
         }
@@ -1068,7 +1068,7 @@ namespace Server
 
 
             for (int i = 0; i < _selectedMovementInfos.Count; i++)
-                _selectedMovementInfos[i].Destination.X = temp;
+                _selectedMovementInfos[i].DestinationX = temp;
 
             RefreshMovementList();
         }
@@ -1087,7 +1087,7 @@ namespace Server
 
 
             for (int i = 0; i < _selectedMovementInfos.Count; i++)
-                _selectedMovementInfos[i].Destination.Y = temp;
+                _selectedMovementInfos[i].DestinationY = temp;
 
             RefreshMovementList();
         }
@@ -1386,7 +1386,7 @@ namespace Server
 
 
             for (int i = 0; i < _selectedMineZones.Count; i++)
-                _selectedMineZones[i].Location.X = temp;
+                _selectedMineZones[i].LocationX = temp;
             RefreshMineZoneList();
         }
 
@@ -1405,7 +1405,7 @@ namespace Server
 
 
             for (int i = 0; i < _selectedMineZones.Count; i++)
-                _selectedMineZones[i].Location.Y = temp;
+                _selectedMineZones[i].LocationY = temp;
             RefreshMineZoneList();
         }
 

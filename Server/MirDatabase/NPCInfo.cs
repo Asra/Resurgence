@@ -1,44 +1,103 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
+using System.Text.Json;
 ﻿using Server.MirEnvir;
 
 namespace Server.MirDatabase
 {
+    [Table("NPCInfo")]
     public class NPCInfo
     {
+        [NotMapped]
         protected static Envir EditEnvir
         {
             get { return Envir.Edit; }
         }
 
-        public int Index;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; } // Primary Key
 
-        public string FileName = string.Empty, Name = string.Empty;
+        public int Index { get; set; } 
 
-        public int MapIndex;
-        public Point Location;
-        public ushort Rate = 100;
-        public ushort Image;
-        public Color Colour;
+        public string FileName { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
-        public bool TimeVisible = false;
-        public byte HourStart = 0;
-        public byte MinuteStart = 0;
-        public byte HourEnd = 0;
-        public byte MinuteEnd = 1;
-        public short MinLev = 0;
-        public short MaxLev = 0;
-        public string DayofWeek = "";
-        public string ClassRequired = "";
-        public bool Sabuk = false;
-        public int FlagNeeded = 0;
-        public int Conquest;
-        public bool ShowOnBigMap;
-        public int BigMapIcon;
-        public bool CanTeleportTo;
-        public bool ConquestVisible = true;
+        public int MapIndex { get; set; }
 
-        public List<int> CollectQuestIndexes = new List<int>();
-        public List<int> FinishQuestIndexes = new List<int>();
+        // Store Location as X and Y (since EF Core does not support System.Drawing.Point)
+        public int LocationX { get; set; }
+        public int LocationY { get; set; }
+
+        public ushort Rate { get; set; } = 100;
+        public ushort Image { get; set; }
+
+        // Store Color as a string (Hex format)
+        public string ColourHex { get; set; } = "#FFFFFF"; 
+
+        public bool TimeVisible { get; set; } = false;
+        public byte HourStart { get; set; } = 0;
+        public byte MinuteStart { get; set; } = 0;
+        public byte HourEnd { get; set; } = 0;
+        public byte MinuteEnd { get; set; } = 1;
+        public short MinLev { get; set; } = 0;
+        public short MaxLev { get; set; } = 0;
+        public string DayofWeek { get; set; } = "";
+        public string ClassRequired { get; set; } = "";
+        public bool Sabuk { get; set; } = false;
+        public int FlagNeeded { get; set; } = 0;
+        public int Conquest { get; set; }
+        public bool ShowOnBigMap { get; set; }
+        public int BigMapIcon { get; set; }
+        public bool CanTeleportTo { get; set; }
+        public bool ConquestVisible { get; set; } = true;
+
+        // Store List<int> as JSON string
+        public string CollectQuestIndexesJson
+        {
+            get => JsonSerializer.Serialize(CollectQuestIndexes);
+            set => CollectQuestIndexes = string.IsNullOrEmpty(value)
+                ? new List<int>()
+                : JsonSerializer.Deserialize<List<int>>(value);
+        }
+
+        [NotMapped] // Not stored in the database directly
+        public List<int> CollectQuestIndexes { get; set; } = new List<int>();
+
+        public string FinishQuestIndexesJson
+        {
+            get => JsonSerializer.Serialize(FinishQuestIndexes);
+            set => FinishQuestIndexes = string.IsNullOrEmpty(value)
+                ? new List<int>()
+                : JsonSerializer.Deserialize<List<int>>(value);
+        }
+
+        [NotMapped]
+        public List<int> FinishQuestIndexes { get; set; } = new List<int>();
+
+        // NotMapped property to allow using System.Drawing.Point
+        [NotMapped]
+        public System.Drawing.Point Location
+        {
+            get => new System.Drawing.Point(LocationX, LocationY);
+            set
+            {
+                LocationX = value.X;
+                LocationY = value.Y;
+            }
+        }
+
+        [NotMapped]
+        public System.Drawing.Color Colour
+        {
+            get => ColorTranslator.FromHtml(ColourHex); // Convert from hex string to Color
+            set => ColourHex = ColorTranslator.ToHtml(value); // Convert from Color to hex string
+        }
+
+
         
         public NPCInfo() { }
         public NPCInfo(BinaryReader reader)
@@ -160,20 +219,43 @@ namespace Server.MirDatabase
 
             info.Name = data[4];
 
-            if (!ushort.TryParse(data[5], out info.Image)) return;
-            if (!ushort.TryParse(data[6], out info.Rate)) return;
+            ushort image, rate;
+            bool showOnBigMap, canTeleportTo, conquestVisible, timeVisible;
+            int bigMapIcon;
+            short minLev, maxLev;
+            byte hourStart, minuteStart, hourEnd, minuteEnd;
 
-            if (!bool.TryParse(data[7], out info.ShowOnBigMap)) return;
-            if (!int.TryParse(data[8], out info.BigMapIcon)) return;
-            if (!bool.TryParse(data[9], out info.CanTeleportTo)) return;
-            if (!bool.TryParse(data[10], out info.ConquestVisible)) return;
-            if (!short.TryParse(data[11], out info.MinLev)) return;
-            if (!short.TryParse(data[12], out info.MaxLev)) return;
-            if (!bool.TryParse(data[13], out info.TimeVisible)) return;
-            if (!byte.TryParse(data[14], out info.HourStart)) return;
-            if (!byte.TryParse(data[15], out info.MinuteStart)) return;
-            if (!byte.TryParse(data[16], out info.HourEnd)) return;
-            if (!byte.TryParse(data[17], out info.MinuteEnd)) return;
+
+            // Parse values into temporary variables first
+            if (!ushort.TryParse(data[5], out image)) return;
+            if (!ushort.TryParse(data[6], out rate)) return;
+
+            if (!bool.TryParse(data[7], out showOnBigMap)) return;
+            if (!int.TryParse(data[8], out bigMapIcon)) return;
+            if (!bool.TryParse(data[9], out canTeleportTo)) return;
+            if (!bool.TryParse(data[10], out conquestVisible)) return;
+            if (!short.TryParse(data[11], out minLev)) return;
+            if (!short.TryParse(data[12], out maxLev)) return;
+            if (!bool.TryParse(data[13], out timeVisible)) return;
+            if (!byte.TryParse(data[14], out hourStart)) return;
+            if (!byte.TryParse(data[15], out minuteStart)) return;
+            if (!byte.TryParse(data[16], out hourEnd)) return;
+            if (!byte.TryParse(data[17], out minuteEnd)) return;
+
+            // Assign parsed values to object properties
+            info.Image = image;
+            info.Rate = rate;
+            info.ShowOnBigMap = showOnBigMap;
+            info.BigMapIcon = bigMapIcon;
+            info.CanTeleportTo = canTeleportTo;
+            info.ConquestVisible = conquestVisible;
+            info.MinLev = minLev;
+            info.MaxLev = maxLev;
+            info.TimeVisible = timeVisible;
+            info.HourStart = hourStart;
+            info.MinuteStart = minuteStart;
+            info.HourEnd = hourEnd;
+            info.MinuteEnd = minuteEnd;
 
             info.Index = ++EditEnvir.NPCIndex;
             EditEnvir.NPCInfoList.Add(info);

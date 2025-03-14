@@ -1,29 +1,37 @@
 ﻿using Server.MirEnvir;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server.MirDatabase
 {
+    [Table("IntelligentCreatureInfo")]
     public class IntelligentCreatureInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
 
-        public static List<IntelligentCreatureInfo> Creatures = new List<IntelligentCreatureInfo>();
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
-        public IntelligentCreatureType PetType;
+        public static List<IntelligentCreatureInfo> Creatures { get; set; } = new List<IntelligentCreatureInfo>();
 
-        public int Icon;
-        public int MinimalFullness = 1000;
+        public IntelligentCreatureType PetType { get; set; }
 
-        public bool MousePickupEnabled = false;
-        public int MousePickupRange = 0;
-        public bool AutoPickupEnabled = false;
-        public int AutoPickupRange = 0;
-        public bool SemiAutoPickupEnabled = false;
-        public int SemiAutoPickupRange = 0;
+        public int Icon{ get; set; }
+        public int MinimalFullness { get; set; } = 1000;
 
-        public bool CanProduceBlackStone = false;
+        public bool MousePickupEnabled { get; set; } = false;
+        public int MousePickupRange { get; set; } = 0;
+        public bool AutoPickupEnabled { get; set; } = false;
+        public int AutoPickupRange { get; set; } = 0;
+        public bool SemiAutoPickupEnabled { get; set; } = false;
+        public int SemiAutoPickupRange { get; set; } = 0;
+
+        public bool CanProduceBlackStone { get; set; } = false;
 
         static IntelligentCreatureInfo()
         {
@@ -61,25 +69,33 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("UserIntelligentCreature")]
     public class UserIntelligentCreature
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
 
-        public IntelligentCreatureType PetType;
-        public IntelligentCreatureInfo Info;
-        public IntelligentCreatureItemFilter Filter;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
-        public IntelligentCreaturePickupMode petMode = IntelligentCreaturePickupMode.SemiAutomatic;
+        public IntelligentCreatureType PetType { get; set; }
+        public IntelligentCreatureInfo Info { get; set; }
+        public IntelligentCreatureItemFilter Filter { get; set; }
 
-        public string CustomName;
-        public int Fullness;
-        public int SlotIndex;
-        public DateTime Expire;
-        public long BlackstoneTime = 0;
-        public long MaintainFoodTime = 0;
+        public IntelligentCreaturePickupMode petMode { get; set; } = IntelligentCreaturePickupMode.SemiAutomatic;
+
+        public string CustomName { get; set; }
+        public int Fullness { get; set; }
+        public int SlotIndex { get; set; }
+        public DateTime Expire { get; set; }
+        public long BlackstoneTime { get; set; } = 0;
+        public long MaintainFoodTime { get; set; } = 0;
+
+        public UserIntelligentCreature() { }
 
         public UserIntelligentCreature(IntelligentCreatureType creatureType, int slot, byte effect = 0)
         {

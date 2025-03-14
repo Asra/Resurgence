@@ -203,7 +203,7 @@ namespace Server
 
 
             for (int i = 0; i < _selectedNPCInfos.Count; i++)
-                _selectedNPCInfos[i].Location.X = temp;
+                _selectedNPCInfos[i].LocationX = temp;
 
             RefreshNPCList();
         }
@@ -222,7 +222,7 @@ namespace Server
 
 
             for (int i = 0; i < _selectedNPCInfos.Count; i++)
-                _selectedNPCInfos[i].Location.Y = temp;
+                _selectedNPCInfos[i].LocationY = temp;
 
             RefreshNPCList();
         }

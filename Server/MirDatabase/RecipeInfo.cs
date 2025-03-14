@@ -1,32 +1,41 @@
 ﻿using Server.MirEnvir;
 using Server.MirObjects;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server.MirDatabase
 {
+    [Table("RecipeInfo")]
     public class RecipeInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
-
+        [NotMapped]
         protected static MessageQueue MessageQueue
         {
             get { return MessageQueue.Instance; }
         }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
-        public UserItem Item;
-        public List<UserItem> Ingredients;
-        public List<UserItem> Tools;
+        public UserItem Item { get; set; }
+        public List<UserItem> Ingredients { get; set; }
+        public List<UserItem> Tools { get; set; }
 
-        public List<int> RequiredFlag = new List<int>();
-        public ushort? RequiredLevel = null;
-        public List<int> RequiredQuest = new List<int>();
-        public List<MirClass> RequiredClass = new List<MirClass>();
-        public MirGender? RequiredGender = null;
+        public List<int> RequiredFlag { get; set; } = new List<int>();
+        public ushort? RequiredLevel { get; set; } = null;
+        public List<int> RequiredQuest { get; set; } = new List<int>();
+        public List<MirClass> RequiredClass { get; set; } = new List<MirClass>();
+        public MirGender? RequiredGender { get; set; } = null;
 
-        public byte Chance = 100;
-        public uint Gold = 0;
+        public byte Chance { get; set; } = 100;
+        public uint Gold { get; set; } = 0;
+
+        public RecipeInfo() { }
 
         public RecipeInfo(string name)
         {
@@ -125,8 +134,10 @@ namespace Server.MirDatabase
                             if (data.Length >= 2)
                                 ushort.TryParse(data[1], out count);
 
+                            ushort dura = 0;
                             if (data.Length >= 3)
-                                ushort.TryParse(data[2], out ingredient.CurrentDura);
+                                ushort.TryParse(data[2], out dura);
+                            ingredient.CurrentDura = dura;
 
                             ingredient.Count = count > info.StackSize ? info.StackSize : count;
 

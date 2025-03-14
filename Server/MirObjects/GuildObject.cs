@@ -250,7 +250,7 @@ namespace Server.MirObjects
             Found:
             if (Member == null) return false;
 
-            MirDatabase.CharacterInfo Character = Envir.GetCharacterInfo(memberName);
+            MirDatabase.CharacterInfo Character = Envir.AccountService.GetCharacterByName(memberName);
             if (Character == null) return false;
             if ((rankIndex == 0) && (Character.Level < Settings.Guild_RequiredLevel))
             {

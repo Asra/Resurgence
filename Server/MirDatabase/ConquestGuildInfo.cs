@@ -1,27 +1,36 @@
 ﻿using Server.MirEnvir;
 using Server.MirObjects;
 using Server.MirObjects.Monsters;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server.MirDatabase
 {
+    [Table("ConquestGuildInfo")]
     public class ConquestGuildInfo
     {
-        public List<ConquestGuildArcherInfo> ArcherList = new List<ConquestGuildArcherInfo>();
-        public List<ConquestGuildGateInfo> GateList = new List<ConquestGuildGateInfo>();
-        public List<ConquestGuildWallInfo> WallList = new List<ConquestGuildWallInfo>();
-        public List<ConquestGuildSiegeInfo> SiegeList = new List<ConquestGuildSiegeInfo>();
-        public List<ConquestGuildFlagInfo> FlagList = new List<ConquestGuildFlagInfo>();
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; } = 0;
 
-        public Dictionary<ConquestGuildFlagInfo, Dictionary<GuildObject, int>> ControlPoints = new Dictionary<ConquestGuildFlagInfo, Dictionary<GuildObject, int>>();
+        public List<ConquestGuildArcherInfo> ArcherList { get; set; } = new List<ConquestGuildArcherInfo>();
+        public List<ConquestGuildGateInfo> GateList { get; set; } = new List<ConquestGuildGateInfo>();
+        public List<ConquestGuildWallInfo> WallList { get; set; } = new List<ConquestGuildWallInfo>();
+        public List<ConquestGuildSiegeInfo> SiegeList { get; set; } = new List<ConquestGuildSiegeInfo>();
+        public List<ConquestGuildFlagInfo> FlagList { get; set; } = new List<ConquestGuildFlagInfo>();
 
-        public int Owner = 0;
-        public uint GoldStorage;
-        public int AttackerID;
-        public byte NPCRate = 0;
+        [NotMapped]
+        public Dictionary<ConquestGuildFlagInfo, Dictionary<GuildObject, int>> ControlPoints { get; set; } = new Dictionary<ConquestGuildFlagInfo, Dictionary<GuildObject, int>>();
 
-        public ConquestInfo Info;
+        public int Owner { get; set; } = 0;
+        public uint GoldStorage { get; set; }
+        public int AttackerID { get; set; }
+        public byte NPCRate { get; set; } = 0;
 
-        public bool NeedSave = false;
+        [NotMapped]
+        public ConquestInfo Info { get; set; }
+
+        public bool NeedSave { get; set; } = false;
 
         public ConquestGuildInfo() { }
 
@@ -91,19 +100,27 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("ConquestGuildSiegeInfo")]   
     public class ConquestGuildSiegeInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; } = 0;
 
-        public int Index;
-        public int Health;
+        public int Index { get; set; }
+        public int Health { get; set; }
 
-        public ConquestSiegeInfo Info;
-        public ConquestObject Conquest;
-        public Gate Gate;
+        [NotMapped]
+        public ConquestSiegeInfo Info { get; set; }
+        [NotMapped]
+        public ConquestObject Conquest { get; set; }
+        [NotMapped]
+        public Gate Gate { get; set; }
 
         public ConquestGuildSiegeInfo() { }
 
@@ -202,6 +219,7 @@ namespace Server.MirDatabase
         }
     }
 
+    [NotMapped]
     public class ConquestGuildFlagInfo
     {
         public int Index;
@@ -271,20 +289,29 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("ConquestGuildWallInfo")]
     public class ConquestGuildWallInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
 
-        public int Index;
-        public int Health;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
+        public int Index { get; set; }
+        public int Health { get; set; }
+
+        [NotMapped]
         public ConquestWallInfo Info;
 
+        [NotMapped]
         public ConquestObject Conquest;
 
+        [NotMapped]
         public Wall Wall;
 
 
@@ -372,18 +399,27 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("ConquestGuildGateInfo")]
     public class ConquestGuildGateInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
 
-        public int Index;
-        public int Health;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
+        public int Index { get; set; }
+        public int Health { get; set; }
+
+        [NotMapped]
         public ConquestGateInfo Info;
+        [NotMapped]
         public ConquestObject Conquest;
+        [NotMapped]
         public Gate Gate;
 
 
@@ -475,21 +511,28 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("ConquestGuildArcherInfo")]
     public class ConquestGuildArcherInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
 
-        public int Index;
-        public bool Alive;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; } = 0;
 
-        public ConquestArcherInfo Info;
+        public int Index { get; set; }
+        public bool Alive { get; set; }
 
-        public ConquestObject Conquest;
-
-        public ConquestArcher ArcherMonster;
+        [NotMapped]
+        public ConquestArcherInfo Info { get; set; }
+        [NotMapped]
+        public ConquestObject Conquest { get; set; }
+        [NotMapped]
+        public ConquestArcher ArcherMonster { get; set; }
 
 
         public ConquestGuildArcherInfo() { }

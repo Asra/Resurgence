@@ -1,15 +1,30 @@
 ﻿using Server.MirEnvir;
 using Server.MirObjects;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;    
+using System.Collections.Generic;
+
 
 namespace Server.MirDatabase
-{
+{    
+    [Table("BuffInfo")]
     public class BuffInfo
     {
+
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
         public BuffType Type { get; set; }
         public BuffStackType StackType { get; set; }
         public BuffProperty Properties { get; set; }
         public int Icon { get; set; }
         public bool Visible { get; set; }
+
+        public BuffInfo()
+        {
+
+        }
 
         public static List<BuffInfo> Load()
         {
@@ -87,44 +102,78 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("Buffs")]
     public class Buff
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
 
-        private Dictionary<string, object> Data { get; set; } = new Dictionary<string, object>();
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
+        // Store serialized dictionary data
+        private string _dataJson { get; set; }
+        
+        [NotMapped]
+        public Dictionary<string, object> Data
+        {
+            get => string.IsNullOrEmpty(_dataJson) 
+                ? new Dictionary<string, object>() 
+                : System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(_dataJson);
+            set => _dataJson = System.Text.Json.JsonSerializer.Serialize(value);
+        }
+
+        [ForeignKey("BuffInfoId")]
         public BuffInfo Info;
+        [NotMapped]
         public MapObject Caster;
-        public uint ObjectID;
-        public long ExpireTime;
 
+        public uint ObjectID { get; set; }
+        public long ExpireTime { get; set; }
+
+        [NotMapped]
         public long LastTime, NextTime;
 
-        public Stats Stats;
+        public virtual Stats Stats { get; set; }
 
-        public int[] Values;
 
+        // Store Values array as JSON string
+        private string _valuesJson { get; set; }
+        [NotMapped]
+        public int[] Values
+        {
+            get => string.IsNullOrEmpty(_valuesJson) 
+                ? Array.Empty<int>() 
+                : System.Text.Json.JsonSerializer.Deserialize<int[]>(_valuesJson);
+            set => _valuesJson = System.Text.Json.JsonSerializer.Serialize(value);
+        }
+
+        [NotMapped]
         public bool FlagForRemoval;
+        [NotMapped]
         public bool Paused;
-
+        [NotMapped]
         public BuffType Type
         {
             get { return Info.Type; }
         }
-
+        [NotMapped]
         public BuffStackType StackType
         {
             get { return Info.StackType; }
         }
-
+        [NotMapped]
         public BuffProperty Properties
         {
             get { return Info.Properties; }
         }
 
+        public Buff() { }
+        
         public Buff(BuffType type)
         {
             Info = Envir.GetBuffInfo(type);

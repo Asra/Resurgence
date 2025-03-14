@@ -1,47 +1,63 @@
 ﻿using System.Text.RegularExpressions;
 using Server.MirEnvir;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server.MirDatabase
 {
+    [Table("MonsterInfo")]    
     public class MonsterInfo
     {
+        [NotMapped]
         protected static Envir Envir
         {
             get { return Envir.Main; }
         }
 
+        [NotMapped]
         protected static Envir EditEnvir
         {
             get { return Envir.Edit; }
         }
 
+        [NotMapped]
         protected static MessageQueue MessageQueue
         {
             get { return MessageQueue.Instance; }
         }
 
-        public int Index;
-        public string Name = string.Empty;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
-        public Monster Image;
-        public byte AI, Effect, ViewRange = 7, CoolEye;
-        public ushort Level;
+        public int Index { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public byte Light;
+        public Monster Image { get; set; }
+        public byte AI { get; set; }
+        public byte Effect { get; set; }
+        public byte ViewRange { get; set; } = 7;
+        public byte CoolEye { get; set; }
+        public ushort Level { get; set; }
+        public byte Light { get; set; }
 
-        public ushort AttackSpeed = 2500, MoveSpeed = 1800;
-        public uint Experience;
+        public ushort AttackSpeed { get; set; } = 2500;
+        public ushort MoveSpeed { get; set; } = 1800;
+        public uint Experience { get; set; }
 
-        public string DropPath = "";
-        
-        public List<DropInfo> Drops = new List<DropInfo>();
+        public string DropPath { get; set; } = "";
+        [NotMapped]
+        public List<DropInfo> Drops { get; set; } = new List<DropInfo>();
 
-        public bool CanTame = true, CanPush = true, AutoRev = true, Undead = false;
+        public bool CanTame { get; set; } = true;
+        public bool CanPush { get; set; } = true;
+        public bool AutoRev { get; set; } = true;
+        public bool Undead { get; set; } = true;
 
-        public bool HasSpawnScript;
-        public bool HasDieScript;
+        public bool HasSpawnScript { get; set; }
+        public bool HasDieScript { get; set; }
 
-        public Stats Stats;
+        public Stats Stats { get; set; }
 
         public MonsterInfo()
         {
@@ -181,44 +197,35 @@ namespace Server.MirDatabase
             if (!ushort.TryParse(data[1], out image)) return;
             info.Image = (Monster) image;
 
-            if (!byte.TryParse(data[2], out info.AI)) return;
-            if (!byte.TryParse(data[3], out info.Effect)) return;
-            if (!ushort.TryParse(data[4], out info.Level)) return;
-            if (!byte.TryParse(data[5], out info.ViewRange)) return;
+            if (!byte.TryParse(data[2], out byte AI)) return;
+            info.AI = AI;
+            if (!byte.TryParse(data[3], out byte effect)) return;      
+            info.Effect = effect;
+            if (!ushort.TryParse(data[4], out ushort level)) return;     
+            info.Level = level;
+            if (!byte.TryParse(data[5], out byte viewRange)) return;     
+            info.ViewRange = viewRange;
 
-            //if (!int.TryParse(data[6], out info.HP)) return;
+            if (!byte.TryParse(data[19], out byte light)) return;        
+            info.Light = light;
+            if (!ushort.TryParse(data[20], out ushort attackSpeed)) return; 
+            info.AttackSpeed = attackSpeed;
+            if (!ushort.TryParse(data[21], out ushort moveSpeed)) return;   
+            info.MoveSpeed = moveSpeed;
 
-            //if (!ushort.TryParse(data[7], out info.MinAC)) return;
-            //if (!ushort.TryParse(data[8], out info.MaxAC)) return;
-            //if (!ushort.TryParse(data[9], out info.MinMAC)) return;
-            //if (!ushort.TryParse(data[10], out info.MaxMAC)) return;
-            //if (!ushort.TryParse(data[11], out info.MinDC)) return;
-            //if (!ushort.TryParse(data[12], out info.MaxDC)) return;
-            //if (!ushort.TryParse(data[13], out info.MinMC)) return;
-            //if (!ushort.TryParse(data[14], out info.MaxMC)) return;
-            //if (!ushort.TryParse(data[15], out info.MinSC)) return;
-            //if (!ushort.TryParse(data[16], out info.MaxSC)) return;
-            //if (!byte.TryParse(data[17], out info.Accuracy)) return;
-            //if (!byte.TryParse(data[18], out info.Agility)) return;
-            if (!byte.TryParse(data[19], out info.Light)) return;
+            if (!uint.TryParse(data[22], out uint experience)) return;    
+            info.Experience = experience;
 
-            if (!ushort.TryParse(data[20], out info.AttackSpeed)) return;
-            if (!ushort.TryParse(data[21], out info.MoveSpeed)) return;
-
-            if (!uint.TryParse(data[22], out info.Experience)) return;
-            
-            if (!bool.TryParse(data[23], out info.CanTame)) return;
-            if (!bool.TryParse(data[24], out info.CanPush)) return;
-
-            if (!bool.TryParse(data[25], out info.AutoRev)) return;
-            if (!bool.TryParse(data[26], out info.Undead)) return;
-            if (!byte.TryParse(data[27], out info.CoolEye)) return;
-
-            //int count;
-
-            //if (!int.TryParse(data[27], out count)) return;
-
-            //if (28 + count * 3 > data.Length) return;
+            if (!bool.TryParse(data[23], out bool canTame)) return;       
+            info.CanTame = canTame;
+            if (!bool.TryParse(data[24], out bool canPush)) return;       
+            info.CanPush = canPush;
+            if (!bool.TryParse(data[25], out bool autoRev)) return;       
+            info.AutoRev = autoRev;
+            if (!bool.TryParse(data[26], out bool undead)) return;        
+            info.Undead = undead;
+            if (!byte.TryParse(data[27], out byte coolEye)) return;       
+            info.CoolEye = coolEye;
 
             info.Index = ++EditEnvir.MonsterIndex;
             EditEnvir.MonsterInfoList.Add(info);

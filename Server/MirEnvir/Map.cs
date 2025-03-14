@@ -40,6 +40,8 @@ namespace Server.MirEnvir
         public List<ConquestObject> Conquest = new List<ConquestObject>();
         public ConquestObject tempConquest;
 
+        public Map() { }
+
         public Map(MapInfo info)
         {
             Info = info;

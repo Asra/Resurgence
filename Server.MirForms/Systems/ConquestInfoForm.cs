@@ -382,7 +382,7 @@ namespace Server
             }
             ActiveControl.BackColor = SystemColors.Window;
 
-            selectedConquest.Location.X = temp;
+            selectedConquest.LocationX = temp;
         }
 
         private void LocY_textbox_TextChanged(object sender, EventArgs e)
@@ -399,7 +399,7 @@ namespace Server
             }
             ActiveControl.BackColor = SystemColors.Window;
 
-            selectedConquest.Location.Y = temp;
+            selectedConquest.LocationY = temp;
         }
 
         private void Size_textbox_TextChanged(object sender, EventArgs e)
@@ -432,7 +432,7 @@ namespace Server
                 return;
             }
             ActiveControl.BackColor = SystemColors.Window;
-            selectedArcher.Location.X = temp;
+            selectedArcher.LocationX = temp;
         }
 
         private void ArchYLoc_textbox_TextChanged(object sender, EventArgs e)
@@ -448,7 +448,7 @@ namespace Server
                 return;
             }
             ActiveControl.BackColor = SystemColors.Window;
-            selectedArcher.Location.Y = temp;
+            selectedArcher.LocationY = temp;
         }
 
         private void ConquestMap_combo_SelectedIndexChanged(object sender, EventArgs e)
@@ -520,7 +520,7 @@ namespace Server
                 return;
             }
             ActiveControl.BackColor = SystemColors.Window;
-            selectedGate.Location.X = temp;
+            selectedGate.LocationX = temp;
         }
 
         private void GateIndex_combo_SelectedIndexChanged(object sender, EventArgs e)
@@ -545,7 +545,7 @@ namespace Server
                 return;
             }
             ActiveControl.BackColor = SystemColors.Window;
-            selectedGate.Location.Y = temp;
+            selectedGate.LocationY = temp;
         }
 
         private void AddWall_button_Click(object sender, EventArgs e)
@@ -592,7 +592,7 @@ namespace Server
                 return;
             }
             ActiveControl.BackColor = SystemColors.Window;
-            selectedWall.Location.X = temp;
+            selectedWall.LocationX = temp;
         }
 
         private void WallYLoc_textbox_TextChanged(object sender, EventArgs e)
@@ -608,7 +608,7 @@ namespace Server
                 return;
             }
             ActiveControl.BackColor = SystemColors.Window;
-            selectedWall.Location.Y = temp;
+            selectedWall.LocationY = temp;
         }
 
         private void ArcherCost_textbox_TextChanged(object sender, EventArgs e)
@@ -823,7 +823,7 @@ namespace Server
             }
             ActiveControl.BackColor = SystemColors.Window;
 
-            selectedConquest.KingLocation.X = temp;
+            selectedConquest.KingLocationX = temp;
         }
 
         private void ObLocY_textbox_TextChanged(object sender, EventArgs e)
@@ -840,7 +840,7 @@ namespace Server
             }
             ActiveControl.BackColor = SystemColors.Window;
 
-            selectedConquest.KingLocation.Y = temp;
+            selectedConquest.KingLocationY = temp;
         }
 
         private void ObSize_textbox_TextChanged(object sender, EventArgs e)
@@ -904,7 +904,7 @@ namespace Server
                 return;
             }
             ActiveControl.BackColor = SystemColors.Window;
-            selectedSiege.Location.X = temp;
+            selectedSiege.LocationX = temp;
         }
 
         private void SiegeYLoc_textbox_TextChanged(object sender, EventArgs e)
@@ -920,7 +920,7 @@ namespace Server
                 return;
             }
             ActiveControl.BackColor = SystemColors.Window;
-            selectedSiege.Location.Y = temp;
+            selectedSiege.LocationY = temp;
         }
 
         private void SiegeName_textbox_TextChanged(object sender, EventArgs e)
@@ -987,7 +987,7 @@ namespace Server
                 return;
             }
             ActiveControl.BackColor = SystemColors.Window;
-            selectedFlag.Location.X = temp;
+            selectedFlag.LocationX = temp;
         }
 
         private void FlagYLoc_textbox_TextChanged(object sender, EventArgs e)
@@ -1003,7 +1003,7 @@ namespace Server
                 return;
             }
             ActiveControl.BackColor = SystemColors.Window;
-            selectedFlag.Location.Y = temp;
+            selectedFlag.LocationY = temp;
         }
 
         private void FlagName_textbox_TextChanged(object sender, EventArgs e)
@@ -1087,7 +1087,7 @@ namespace Server
                 return;
             }
             ActiveControl.BackColor = SystemColors.Window;
-            selectedControlPoint.Location.X = temp;
+            selectedControlPoint.LocationX = temp;
         }
 
         private void ControlYLoc_textbox_TextChanged(object sender, EventArgs e)
@@ -1103,7 +1103,7 @@ namespace Server
                 return;
             }
             ActiveControl.BackColor = SystemColors.Window;
-            selectedControlPoint.Location.Y = temp;
+            selectedControlPoint.LocationY = temp;
         }
 
         private void ControlName_textbox_TextChanged(object sender, EventArgs e)

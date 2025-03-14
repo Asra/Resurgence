@@ -1,5 +1,8 @@
 ﻿using log4net;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Server.MirDatabase;
 
 namespace Server.MirForms
 {
@@ -15,6 +18,16 @@ namespace Server.MirForms
 
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             log4net.Config.XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
+
+            var services = new ServiceCollection();
+            services.AddDbContext<GameDbContext>(options =>
+                options.UseSqlite("Data Source=game.db"));
+
+            services.AddMemoryCache();
+            services.AddSingleton<AccountCacheService>();
+            var serviceProvider = services.BuildServiceProvider();
+
+            GlobalServices.AccountService = serviceProvider.GetRequiredService<AccountCacheService>();
 
             try
             {

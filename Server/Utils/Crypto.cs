@@ -19,8 +19,11 @@ namespace Server.Utils
 
         public static string HashPassword(string password, byte[] salt)
         {
-            Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA1);
-            return Encoding.UTF8.GetString(pbkdf2.GetBytes(HashSize));
+            using (var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA1))
+            {
+                byte[] hashBytes = pbkdf2.GetBytes(HashSize);
+                return Convert.ToBase64String(hashBytes);
+            }
         }
     }
 }

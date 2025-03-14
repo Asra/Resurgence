@@ -1,15 +1,22 @@
-﻿public class IntelligentCreatureRules
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+[Table("IntelligentCreatureRules")]
+public class IntelligentCreatureRules
 {
-    public int MinimalFullness = 1;
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+    public int MinimalFullness { get; set; } = 1;
 
-    public bool MousePickupEnabled = false;
-    public int MousePickupRange = 0;
-    public bool AutoPickupEnabled = false;
-    public int AutoPickupRange = 0;
-    public bool SemiAutoPickupEnabled = false;
-    public int SemiAutoPickupRange = 0;
+    public bool MousePickupEnabled { get; set; } = false;
+    public int MousePickupRange { get; set; } = 0;
+    public bool AutoPickupEnabled { get; set; } = false;
+    public int AutoPickupRange { get; set; } = 0;
+    public bool SemiAutoPickupEnabled { get; set; } = false;
+    public int SemiAutoPickupRange { get; set; } = 0;
 
-    public bool CanProduceBlackStone = false;
+    public bool CanProduceBlackStone { get; set; } = false;
 
     public IntelligentCreatureRules()
     {
@@ -42,19 +49,23 @@
     }
 }
 
+[Table("IntelligentCreatureItemFilter")]
 public class IntelligentCreatureItemFilter
 {
-    public bool PetPickupAll = true;
-    public bool PetPickupGold = false;
-    public bool PetPickupWeapons = false;
-    public bool PetPickupArmours = false;
-    public bool PetPickupHelmets = false;
-    public bool PetPickupBoots = false;
-    public bool PetPickupBelts = false;
-    public bool PetPickupAccessories = false;
-    public bool PetPickupOthers = false;
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+    public bool PetPickupAll { get; set; } = true;
+    public bool PetPickupGold { get; set; } = false;
+    public bool PetPickupWeapons { get; set; } = false;
+    public bool PetPickupArmours { get; set; } = false;
+    public bool PetPickupHelmets { get; set; } = false;
+    public bool PetPickupBoots { get; set; } = false;
+    public bool PetPickupBelts { get; set; } = false;
+    public bool PetPickupAccessories { get; set; } = false;
+    public bool PetPickupOthers { get; set; } = false;
 
-    public ItemGrade PickupGrade = ItemGrade.None;
+    public ItemGrade PickupGrade { get; set; } = ItemGrade.None;
 
     public IntelligentCreatureItemFilter()
     {
@@ -156,22 +167,27 @@ public class IntelligentCreatureItemFilter
     }
 }
 
+[Table("ClientIntelligentCreature")]
 public class ClientIntelligentCreature
 {
-    public IntelligentCreatureType PetType;
-    public int Icon;
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
 
-    public string CustomName;
-    public int Fullness;
-    public int SlotIndex;
-    public DateTime Expire;
-    public long BlackstoneTime;
-    public long MaintainFoodTime;
+    public IntelligentCreatureType PetType { get; set; }
+    public int Icon { get; set; }
 
-    public IntelligentCreaturePickupMode petMode = IntelligentCreaturePickupMode.SemiAutomatic;
+    public string CustomName { get; set; }
+    public int Fullness { get; set; }
+    public int SlotIndex { get; set; }
+    public DateTime Expire { get; set; }
+    public long BlackstoneTime { get; set; }
+    public long MaintainFoodTime { get; set; }
 
-    public IntelligentCreatureRules CreatureRules;
-    public IntelligentCreatureItemFilter Filter;
+    public IntelligentCreaturePickupMode petMode { get; set; } = IntelligentCreaturePickupMode.SemiAutomatic;
+
+    public IntelligentCreatureRules CreatureRules { get; set; }
+    public IntelligentCreatureItemFilter Filter { get; set; }
 
 
     public ClientIntelligentCreature()

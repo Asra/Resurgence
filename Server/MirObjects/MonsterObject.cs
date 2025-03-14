@@ -2445,7 +2445,7 @@ namespace Server.MirObjects
             {
                 if (attacker.HasBuff(BuffType.Mentor, out _))
                 {
-                    CharacterInfo mentee = Envir.GetCharacterInfo(attacker.Info.Mentor);
+                    CharacterInfo mentee = Envir.AccountService.GetCharacterByIndex(attacker.Info.Mentor);
                     PlayerObject player = Envir.GetPlayer(mentee.Name);
                     if (player != null && player.CurrentMap == attacker.CurrentMap && Functions.InRange(player.CurrentLocation, attacker.CurrentLocation, Globals.DataRange) && !player.Dead)
                     {
