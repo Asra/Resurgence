@@ -30,11 +30,11 @@ namespace Server.Account
         #region Load Characters
         private void LoadCharacters()
         {
-            CharacterCountLabel.Text = string.Format("Characters count: {0}", SMain.Envir.CharacterList.Count);
+            CharacterCountLabel.Text = string.Format("Characters count: {0}", SMain.Envir.AccountService.GetAllCharacters().Count);
 
             CharactersList.Items.Clear();
 
-            var characterList = SMain.Envir.CharacterList;
+            var characterList = SMain.Envir.AccountService.GetAllCharacters();
 
             if (characterList == null)
             {
@@ -74,10 +74,10 @@ namespace Server.Account
             }
 
             // Update Character count label
-            CharacterCountLabel.Text = string.Format("Characters count: {0}", SMain.Envir.CharacterList.Count);
+            CharacterCountLabel.Text = string.Format("Characters count: {0}", SMain.Envir.AccountService.GetAllCharacters().Count);
 
             // Get filtered characters based on filter text and checkbox state
-            List<CharacterInfo> filteredCharacters = SMain.Envir.CharacterList;
+            List<CharacterInfo> filteredCharacters = SMain.Envir.AccountService.GetAllCharacters();
 
             if (FilterPlayerTextBox.Text.Length > 0)
             {

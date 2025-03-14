@@ -13,6 +13,7 @@ using System.Net.Sockets;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using S = ServerPackets;
+using Server.Services;
 
 namespace Server.MirEnvir
 {
@@ -125,8 +126,8 @@ namespace Server.MirEnvir
         //User DB
         public int NextAccountID, NextCharacterID, NextGuildID, NextHeroID;
         public ulong NextUserItemID, NextAuctionID, NextMailID, NextRecipeID;
-        public List<AccountInfo> AccountList = new List<AccountInfo>();
-        public List<CharacterInfo> CharacterList = new List<CharacterInfo>();
+        //public List<AccountInfo> AccountList = new List<AccountInfo>();
+        //public List<CharacterInfo> CharacterList = new List<CharacterInfo>();
         public List<GuildInfo> GuildList = new List<GuildInfo>();
         public LinkedList<AuctionInfo> Auctions = new LinkedList<AuctionInfo>();
         public List<ConquestGuildInfo> ConquestList = new List<ConquestGuildInfo>();
@@ -175,6 +176,8 @@ namespace Server.MirEnvir
 
         public List<RankCharacterInfo> RankTop = new List<RankCharacterInfo>();
         public List<RankCharacterInfo>[] RankClass = new List<RankCharacterInfo>[5];
+
+        public AccountCacheService AccountService = GlobalServices.AccountService;
 
         static HttpServer http;
 
@@ -972,33 +975,18 @@ namespace Server.MirEnvir
         }
 
         public void SaveSqlDB() {
-            using (var db = new GameDbContext())
-            {
-                db.MapInfos.AddRange(MapInfoList);
-                db.MagicInfos.AddRange(MagicInfoList);
-                db.SaveChanges();
-                MessageQueue.EnqueueDebugging($"Saving SQL database...");
-            }
+            AccountService.SaveAll();
+            MessageQueue.EnqueueDebugging($"Saving SQL database...");
         }
 
         public void LoadSqlDb()
         {
             MessageQueue.EnqueueDebugging($"Loading SQL database...");
-            using (var db = new GameDbContext())
-            {
-                List<MapInfo> mapInfos = db.MapInfos
-                    .Include(m => m.Respawns)
-                    .Include(m => m.SafeZones)
-                    .ToList();
+    
+            AccountService.GetAccounts();
 
-                MapInfoList.Clear();
-                MapInfoList.AddRange(mapInfos);
-
-                foreach (var map in MapInfoList)
-                {
-                    MessageQueue.EnqueueDebugging($"Map {map.Index}: Name {map.FileName})");
-                }
-            }
+            
+            MessageQueue.EnqueueDebugging($"Loaded {AccountService.GetAccounts().Count} accounts");
         }
 
         public CharacterInfo GetArchivedCharacter(string name)
@@ -1043,6 +1031,7 @@ namespace Server.MirEnvir
 
         public void SaveAccounts()
         {
+            AccountService.SaveAll();
             while (Saving)
                 Thread.Sleep(1);
 
@@ -1064,7 +1053,7 @@ namespace Server.MirEnvir
 
         private void SaveAccounts(Stream stream)
         {
-            using (var writer = new BinaryWriter(stream))
+            /*using (var writer = new BinaryWriter(stream))
             {
                 writer.Write(Version);
                 writer.Write(CustomVersion);
@@ -1102,7 +1091,7 @@ namespace Server.MirEnvir
                     var Save = new RespawnSave { RespawnIndex = Spawn.Info.RespawnIndex, NextSpawnTick = Spawn.NextSpawnTick, Spawned = Spawn.Count >= Spawn.Info.Count * SpawnMultiplier };
                     Save.Save(writer);
                 }
-            }
+            }*/
         }
 
         private void SaveGuilds(bool forced = false)
@@ -1257,6 +1246,7 @@ namespace Server.MirEnvir
 
         public void BeginSaveAccounts()
         {
+            SaveSqlDB();
             if (Saving) return;
 
             Saving = true;
@@ -1427,7 +1417,7 @@ namespace Server.MirEnvir
                 Settings.LinkGuildCreationItems(ItemInfoList);
             }
 
-            //LoadSqlDb();
+            LoadSqlDb();
 
             return true;
         }
@@ -1459,6 +1449,7 @@ namespace Server.MirEnvir
                 using (var stream = File.OpenRead(AccountPath))
                 using (var reader = new BinaryReader(stream))
                 {
+                    /*
                     LoadVersion = reader.ReadInt32();
                     LoadCustomVersion = reader.ReadInt32();
                     NextAccountID = reader.ReadInt32();
@@ -1572,7 +1563,7 @@ namespace Server.MirEnvir
                                 }
                             }
                         }
-                    }
+                    }*/
                 }
             }
         }
@@ -1720,26 +1711,10 @@ namespace Server.MirEnvir
             }
         }
 
-        private bool BindCharacter(AuctionInfo auction)
+        private void BindCharacter(AuctionInfo auction)
         {
-            bool bound = false;
-
-            for (int i = 0; i < CharacterList.Count; i++)
-            {
-                if (CharacterList[i].Index == auction.SellerIndex)
-                {
-                    auction.SellerInfo = CharacterList[i];
-                    bound = true;
-                }
-
-                else if (CharacterList[i].Index == auction.CurrentBuyerIndex)
-                {
-                    auction.CurrentBuyerInfo = CharacterList[i];
-                    bound = true;
-                }
-            }
-
-            return bound;
+            auction.SellerInfo = AccountService.GetCharacterByIndex(auction.SellerIndex);
+            auction.CurrentBuyerInfo = AccountService.GetCharacterByIndex(auction.CurrentBuyerIndex);
         }
 
         public void Start()
@@ -1903,7 +1878,8 @@ namespace Server.MirEnvir
         {
             Connections.Clear();
 
-            LoadAccounts();
+            LoadSqlDb();
+            //LoadAccounts();
 
             LoadGuilds();
 
@@ -1991,16 +1967,14 @@ namespace Server.MirEnvir
 
         private void CleanUp()
         {
-            for (var i = 0; i < CharacterList.Count; i++)
+            foreach (var info in AccountService.GetAllCharacters())
             {
-                var info = CharacterList[i];
-
                 if (info.Deleted)
                 {
                     #region Mentor Cleanup
                     if (info.Mentor > 0)
                     {
-                        var mentor = GetCharacterInfo(info.Mentor);
+                        var mentor = AccountService.GetCharacterByIndex(info.Mentor);
 
                         if (mentor != null)
                         {
@@ -2018,7 +1992,7 @@ namespace Server.MirEnvir
                     #region Marriage Cleanup
                     if (info.Married > 0)
                     {
-                        var Lover = GetCharacterInfo(info.Married);
+                        var Lover = AccountService.GetCharacterByIndex(info.Married);
 
                         info.Married = 0;
                         info.MarriedDate = Now;
@@ -2206,13 +2180,13 @@ namespace Server.MirEnvir
 
             lock (AccountLock)
             {
-                if (AccountExists(p.AccountID))
+                if (AccountService.AccountExists(p.AccountID))
                 {
                     c.Enqueue(new ServerPackets.NewAccount { Result = 7 });
                     return;
                 }
 
-                AccountList.Add(new AccountInfo(p) { Index = ++NextAccountID, CreationIP = c.IPAddress });
+                AccountService.CreateAccount(new AccountInfo(p) { Index = ++NextAccountID, CreationIP = c.IPAddress });
 
 
                 c.Enqueue(new ServerPackets.NewAccount { Result = 8 });
@@ -2258,12 +2232,12 @@ namespace Server.MirEnvir
 
             lock (AccountLock)
             {
-                if (AccountExists(p.AccountID))
+                if (AccountService.AccountExists(p.AccountID))
                 {
                     return 7;
                 }
 
-                AccountList.Add(new AccountInfo(p) { Index = ++NextAccountID, CreationIP = ip });
+                AccountService.CreateAccount(new AccountInfo(p) { Index = ++NextAccountID, CreationIP = ip });
                 return 8;
             }
         }
@@ -2294,7 +2268,7 @@ namespace Server.MirEnvir
                 return;
             }
 
-            var account = GetAccount(p.AccountID);
+            var account = AccountService.GetAccountByName(p.AccountID);
 
             if (account == null)
             {
@@ -2315,13 +2289,13 @@ namespace Server.MirEnvir
             account.ExpiryDate = DateTime.MinValue;
 
             p.CurrentPassword = Utils.Crypto.HashPassword(p.CurrentPassword, account.Salt);
-            if (string.CompareOrdinal(account.Password, p.CurrentPassword) != 0)
+            if (string.CompareOrdinal(account.PasswordHash, p.CurrentPassword) != 0)
             {
                 c.Enqueue(new ServerPackets.ChangePassword { Result = 5 });
                 return;
             }
 
-            account.Password = p.NewPassword;
+            account.PasswordHash = p.NewPassword;
             account.RequirePasswordChange = false;
             c.Enqueue(new ServerPackets.ChangePassword { Result = 6 });
         }
@@ -2344,7 +2318,7 @@ namespace Server.MirEnvir
                 c.Enqueue(new ServerPackets.Login { Result = 2 });
                 return;
             }
-            var account = GetAccount(p.AccountID);
+            var account = AccountService.GetAccountByName(p.AccountID);
 
             if (account == null)
             {
@@ -2370,7 +2344,7 @@ namespace Server.MirEnvir
 
             p.Password = Utils.Crypto.HashPassword(p.Password, account.Salt);
 
-            if (string.CompareOrdinal(account.Password, p.Password) != 0)
+            if (string.CompareOrdinal(account.PasswordHash, p.Password) != 0)
             {
                 if (account.WrongPasswordCount++ >= 5)
                 {
@@ -2410,6 +2384,8 @@ namespace Server.MirEnvir
             account.LastDate = Now;
             account.LastIP = c.IPAddress;
 
+
+
             MessageQueue.Enqueue(account.Connection.SessionID + ", " + account.Connection.IPAddress + ", User logged in.");
             c.Enqueue(new ServerPackets.LoginSuccess { Characters = account.GetSelectInfo() });
         }
@@ -2431,7 +2407,7 @@ namespace Server.MirEnvir
                 return 2;
             }
 
-            var account = GetAccount(AccountID);
+            var account = AccountService.GetAccountByName(AccountID);
 
             if (account == null)
             {
@@ -2448,7 +2424,7 @@ namespace Server.MirEnvir
             }
             account.BanReason = string.Empty;
             account.ExpiryDate = DateTime.MinValue;
-            if (string.CompareOrdinal(account.Password, Password) != 0)
+            if (string.CompareOrdinal(account.PasswordHash, Password) != 0)
             {
                 if (account.WrongPasswordCount++ >= 5)
                 {
@@ -2542,7 +2518,7 @@ namespace Server.MirEnvir
 
             lock (AccountLock)
             {
-                if (CharacterExists(p.Name))
+                if (AccountService.CharacterExists(p.Name))
                 {
                     c.Enqueue(new ServerPackets.NewCharacter { Result = 5 });
                     return;
@@ -2550,8 +2526,9 @@ namespace Server.MirEnvir
 
                 var info = new CharacterInfo(p, c) { Index = ++NextCharacterID, AccountInfo = c.Account };
 
+                AccountService.AddCharacterToAccount(c.Account.Id, info);
                 c.Account.Characters.Add(info);
-                CharacterList.Add(info);
+                
 
                 c.Enqueue(new ServerPackets.NewCharacterSuccess { CharInfo = info.ToSelectInfo() });
             }
@@ -2597,7 +2574,7 @@ namespace Server.MirEnvir
 
             lock (AccountLock)
             {
-                if (CharacterExists(p.Name))
+                if (AccountService.CharacterExists(p.Name))
                 {
                     c.Enqueue(new S.NewHero { Result = 5 });
                     return false;
@@ -2607,41 +2584,23 @@ namespace Server.MirEnvir
             return true;
         }
 
-        public bool AccountExists(string accountID)
-        {
-            for (var i = 0; i < AccountList.Count; i++)
-                if (string.Compare(AccountList[i].AccountID, accountID, StringComparison.OrdinalIgnoreCase) == 0)
-                    return true;
-
-            return false;
-        }
-
-        public bool CharacterExists(string name)
-        {
-            for (var i = 0; i < CharacterList.Count; i++)
-                if (string.Compare(CharacterList[i].Name, name, StringComparison.OrdinalIgnoreCase) == 0)
-                    return true;
-
-            return false;
-        }
-
         public List<CharacterInfo> MatchPlayer(string PlayerID, bool match = false)
         {
-            if (string.IsNullOrEmpty(PlayerID)) return new List<CharacterInfo>(CharacterList);
+            if (string.IsNullOrEmpty(PlayerID)) return new List<CharacterInfo>(AccountService.GetAllCharacters());
 
             List<CharacterInfo> list = new List<CharacterInfo>();
 
-            for (int i = 0; i < CharacterList.Count; i++)
+            for (int i = 0; i < AccountService.GetAllCharacters().Count; i++)
             {
                 if (match)
                 {
-                    if (CharacterList[i].Name.Equals(PlayerID, StringComparison.OrdinalIgnoreCase))
-                        list.Add(CharacterList[i]);
+                    if (AccountService.GetAllCharacters()[i].Name.Equals(PlayerID, StringComparison.OrdinalIgnoreCase))
+                        list.Add(AccountService.GetAllCharacters()[i]);
                 }
                 else
                 {
-                    if (CharacterList[i].Name.IndexOf(PlayerID, StringComparison.OrdinalIgnoreCase) >= 0)
-                        list.Add(CharacterList[i]);
+                    if (AccountService.GetAllCharacters()[i].Name.IndexOf(PlayerID, StringComparison.OrdinalIgnoreCase) >= 0)
+                        list.Add(AccountService.GetAllCharacters()[i]);
                 }
             }
 
@@ -2653,94 +2612,71 @@ namespace Server.MirEnvir
 
             bool isNumeric = ulong.TryParse(itemIdentifier, out ulong itemId);
 
-            for (int i = 0; i < CharacterList.Count; i++)
+            for (int i = 0; i < AccountService.GetAllCharacters().Count; i++)
             {
                 if (match)
                 {
-                    foreach (var item in CharacterList[i].Inventory)
-                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.Equals(itemIdentifier, StringComparison.OrdinalIgnoreCase))) && !list.Contains(CharacterList[i]))
-                            list.Add(CharacterList[i]);
+                    foreach (var item in AccountService.GetAllCharacters()[i].Inventory)
+                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.Equals(itemIdentifier, StringComparison.OrdinalIgnoreCase))) && !list.Contains(AccountService.GetAllCharacters()[i]))
+                            list.Add(AccountService.GetAllCharacters()[i]);
 
-                    foreach (var item in CharacterList[i].AccountInfo.Storage)
-                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.Equals(itemIdentifier, StringComparison.OrdinalIgnoreCase))) && !list.Contains(CharacterList[i]))
-                            list.Add(CharacterList[i]);
+                    foreach (var item in AccountService.GetAllCharacters()[i].AccountInfo.Storage)
+                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.Equals(itemIdentifier, StringComparison.OrdinalIgnoreCase))) && !list.Contains(AccountService.GetAllCharacters()[i]))
+                            list.Add(AccountService.GetAllCharacters()[i]);
 
-                    foreach (var item in CharacterList[i].QuestInventory)
-                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.Equals(itemIdentifier, StringComparison.OrdinalIgnoreCase))) && !list.Contains(CharacterList[i]))
-                            list.Add(CharacterList[i]);
+                    foreach (var item in AccountService.GetAllCharacters()[i].QuestInventory)
+                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.Equals(itemIdentifier, StringComparison.OrdinalIgnoreCase))) && !list.Contains(AccountService.GetAllCharacters()[i]))
+                            list.Add(AccountService.GetAllCharacters()[i]);
 
-                    foreach (var item in CharacterList[i].Equipment)
-                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.Equals(itemIdentifier, StringComparison.OrdinalIgnoreCase))) && !list.Contains(CharacterList[i]))
-                            list.Add(CharacterList[i]);
+                    foreach (var item in AccountService.GetAllCharacters()[i].Equipment)
+                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.Equals(itemIdentifier, StringComparison.OrdinalIgnoreCase))) && !list.Contains(AccountService.GetAllCharacters()[i]))
+                            list.Add(AccountService.GetAllCharacters()[i]);
 
-                    foreach (var mail in CharacterList[i].Mail)
+                    foreach (var mail in AccountService.GetAllCharacters()[i].Mail)
                         foreach (var item in mail.Items)
-                            if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.Equals(itemIdentifier, StringComparison.OrdinalIgnoreCase))) && !list.Contains(CharacterList[i]))
-                                list.Add(CharacterList[i]);
+                            if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.Equals(itemIdentifier, StringComparison.OrdinalIgnoreCase))) && !list.Contains(AccountService.GetAllCharacters()[i]))
+                                list.Add(AccountService.GetAllCharacters()[i]);
                 }
                 else
                 {
-                    foreach (var item in CharacterList[i].Inventory)
-                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.IndexOf(itemIdentifier, StringComparison.OrdinalIgnoreCase) >= 0)) && !list.Contains(CharacterList[i]))
-                            list.Add(CharacterList[i]);
+                    foreach (var item in AccountService.GetAllCharacters()[i].Inventory)
+                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.IndexOf(itemIdentifier, StringComparison.OrdinalIgnoreCase) >= 0)) && !list.Contains(AccountService.GetAllCharacters()[i]))
+                            list.Add(AccountService.GetAllCharacters()[i]);
 
-                    foreach (var item in CharacterList[i].QuestInventory)
-                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.IndexOf(itemIdentifier, StringComparison.OrdinalIgnoreCase) >= 0)) && !list.Contains(CharacterList[i]))
-                            list.Add(CharacterList[i]);
+                    foreach (var item in AccountService.GetAllCharacters()[i].QuestInventory)
+                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.IndexOf(itemIdentifier, StringComparison.OrdinalIgnoreCase) >= 0)) && !list.Contains(AccountService.GetAllCharacters()[i]))
+                            list.Add(AccountService.GetAllCharacters()[i]);
 
-                    foreach (var item in CharacterList[i].Equipment)
-                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.IndexOf(itemIdentifier, StringComparison.OrdinalIgnoreCase) >= 0)) && !list.Contains(CharacterList[i]))
-                            list.Add(CharacterList[i]);
+                    foreach (var item in AccountService.GetAllCharacters()[i].Equipment)
+                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.IndexOf(itemIdentifier, StringComparison.OrdinalIgnoreCase) >= 0)) && !list.Contains(AccountService.GetAllCharacters()[i]))
+                            list.Add(AccountService.GetAllCharacters()[i]);
 
-                    foreach (var item in CharacterList[i].AccountInfo.Storage)
-                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.IndexOf(itemIdentifier, StringComparison.OrdinalIgnoreCase) >= 0)) && !list.Contains(CharacterList[i]))
-                            list.Add(CharacterList[i]);
+                    foreach (var item in AccountService.GetAllCharacters()[i].AccountInfo.Storage)
+                        if (item != null && ((isNumeric && item.UniqueID == itemId) || (!isNumeric && item.FriendlyName.IndexOf(itemIdentifier, StringComparison.OrdinalIgnoreCase) >= 0)) && !list.Contains(AccountService.GetAllCharacters()[i]))
+                            list.Add(AccountService.GetAllCharacters()[i]);
                 }
             }
 
             return list;
         }
 
-        public AccountInfo GetAccount(string accountID)
-        {
-            for (var i = 0; i < AccountList.Count; i++)
-                if (string.Compare(AccountList[i].AccountID, accountID, StringComparison.OrdinalIgnoreCase) == 0)
-                    return AccountList[i];
-
-            return null;
-        }
-
-        public AccountInfo GetAccountByCharacter(string name)
-        {
-            for (var i = 0; i < AccountList.Count; i++)
-            {
-                for (int j = 0; j < AccountList[i].Characters.Count; j++)
-                {
-                    if (string.Compare(AccountList[i].Characters[j].Name, name, StringComparison.OrdinalIgnoreCase) == 0)
-                        return AccountList[i];
-                }
-            }
-
-            return null;
-        }
-
         public List<AccountInfo> MatchAccounts(string accountID, bool match = false)
         {
-            if (string.IsNullOrEmpty(accountID)) return new List<AccountInfo>(AccountList);
+            if (string.IsNullOrEmpty(accountID)) return new List<AccountInfo>(AccountService.GetAccounts());
 
             var list = new List<AccountInfo>();
 
-            for (var i = 0; i < AccountList.Count; i++)
+            for (var i = 0; i < AccountService.GetAccounts().Count; i++)
             {
                 if (match)
                 {
-                    if (AccountList[i].AccountID.Equals(accountID, StringComparison.OrdinalIgnoreCase))
-                        list.Add(AccountList[i]);
+                    if (AccountService.GetAccounts()[i].AccountID.Equals(accountID, StringComparison.OrdinalIgnoreCase))
+                        list.Add(AccountService.GetAccounts()[i]);
                 }
                 else
                 {
-                    if (AccountList[i].AccountID.IndexOf(accountID, StringComparison.OrdinalIgnoreCase) >= 0)
-                        list.Add(AccountList[i]);
+                    if (AccountService.GetAccounts()[i].AccountID.IndexOf(accountID, StringComparison.OrdinalIgnoreCase) >= 0)
+                        list.Add(AccountService.GetAccounts()[i]);
                 }
             }
 
@@ -2749,23 +2685,23 @@ namespace Server.MirEnvir
 
         public List<AccountInfo> MatchAccountsByPlayer(string playerName, bool match = false)
         {
-            if (string.IsNullOrEmpty(playerName)) return new List<AccountInfo>(AccountList);
+            if (string.IsNullOrEmpty(playerName)) return new List<AccountInfo>(AccountService.GetAccounts());
 
             var list = new List<AccountInfo>();
 
-            for (var i = 0; i < AccountList.Count; i++)
+            for (var i = 0; i < AccountService.GetAccounts().Count; i++)
             {
-                for (var j = 0; j < AccountList[i].Characters.Count; j++)
+                for (var j = 0; j < AccountService.GetAccounts()[i].Characters.Count; j++)
                 {
                     if (match)
                     {
-                        if (AccountList[i].Characters[j].Name.Equals(playerName, StringComparison.OrdinalIgnoreCase))
-                            list.Add(AccountList[i]);
+                        if (AccountService.GetAccounts()[i].Characters[j].Name.Equals(playerName, StringComparison.OrdinalIgnoreCase))
+                            list.Add(AccountService.GetAccounts()[i]);
                     }
                     else
                     {
-                        if (AccountList[i].Characters[j].Name.IndexOf(playerName, StringComparison.OrdinalIgnoreCase) >= 0)
-                            list.Add(AccountList[i]);
+                        if (AccountService.GetAccounts()[i].Characters[j].Name.IndexOf(playerName, StringComparison.OrdinalIgnoreCase) >= 0)
+                            list.Add(AccountService.GetAccounts()[i]);
                     }
                 }
             }
@@ -2775,23 +2711,23 @@ namespace Server.MirEnvir
 
         public List<AccountInfo> MatchAccountsByIP(string ipAddress, bool matchLastIP = false, bool match = false)
         {
-            if (string.IsNullOrEmpty(ipAddress)) return new List<AccountInfo>(AccountList);
+            if (string.IsNullOrEmpty(ipAddress)) return new List<AccountInfo>(AccountService.GetAccounts());
 
             var list = new List<AccountInfo>();
 
-            for (var i = 0; i < AccountList.Count; i++)
+            for (var i = 0; i < AccountService.GetAccounts().Count; i++)
             {
-                string ipToMatch = matchLastIP ? AccountList[i].LastIP : AccountList[i].CreationIP;
+                string ipToMatch = matchLastIP ? AccountService.GetAccounts()[i].LastIP : AccountService.GetAccounts()[i].CreationIP;
 
                 if (match)
                 {
                     if (ipToMatch.Equals(ipAddress, StringComparison.OrdinalIgnoreCase))
-                        list.Add(AccountList[i]);
+                        list.Add(AccountService.GetAccounts()[i]);
                 }
                 else
                 {
                     if (ipToMatch.IndexOf(ipAddress, StringComparison.OrdinalIgnoreCase) >= 0)
-                        list.Add(AccountList[i]);
+                        list.Add(AccountService.GetAccounts()[i]);
                 }
             }
 
@@ -2801,7 +2737,7 @@ namespace Server.MirEnvir
 
         public void CreateAccountInfo()
         {
-            AccountList.Add(new AccountInfo {Index = ++NextAccountID});
+            AccountService.CreateAccount(new AccountInfo {Index = ++NextAccountID});
         }
         public void CreateMapInfo()
         {
@@ -3166,23 +3102,7 @@ namespace Server.MirEnvir
 
             return null;
         }
-        public CharacterInfo GetCharacterInfo(string name)
-        {
-            for (var i = 0; i < CharacterList.Count; i++)
-                if (string.Compare(CharacterList[i].Name, name, StringComparison.OrdinalIgnoreCase) == 0)
-                    return CharacterList[i];
 
-            return null;
-        }
-
-        public CharacterInfo GetCharacterInfo(int index)
-        {
-            for (var i = 0; i < CharacterList.Count; i++)
-                if (CharacterList[i].Index == index)
-                    return CharacterList[i];
-
-            return null;
-        }
         public HeroInfo GetHeroInfo(int index)
         {
             return HeroList.FirstOrDefault(x => x.Index == index);
@@ -3312,7 +3232,7 @@ namespace Server.MirEnvir
 
         public void ProcessNewDay()
         {
-            foreach (var c in CharacterList)
+            foreach (var c in AccountService.GetAllCharacters())
             {
                 ClearDailyQuests(c);
 
@@ -3324,7 +3244,7 @@ namespace Server.MirEnvir
 
         private void ProcessRentedItems()
         {
-            foreach (var characterInfo in CharacterList)
+            foreach (var characterInfo in AccountService.GetAllCharacters())
             {
                 if (characterInfo.RentedItems.Count <= 0)
                 {
@@ -3336,7 +3256,7 @@ namespace Server.MirEnvir
                     if (rentedItemInfo.ItemReturnDate >= Now)
                         continue;
 
-                    var rentingPlayer = GetCharacterInfo(rentedItemInfo.RentingPlayerName);
+                    var rentingPlayer = AccountService.GetCharacterByName(rentedItemInfo.RentingPlayerName);
 
                     for (var i = 0; i < rentingPlayer.Inventory.Length; i++)
                     {
@@ -3401,7 +3321,7 @@ namespace Server.MirEnvir
                 }
             }
 
-            foreach (var characterInfo in CharacterList)
+            foreach (var characterInfo in AccountService.GetAllCharacters())
             {
                 if (characterInfo.RentedItemsToRemove.Count <= 0)
                 {
@@ -3424,7 +3344,7 @@ namespace Server.MirEnvir
                 return false;
             }
 
-            var owner = GetCharacterInfo(ownerName);
+            var owner = AccountService.GetCharacterByName(ownerName);
             var returnItems = new List<UserItem>();
 
             foreach (var rentalInformation in owner.RentedItems)
@@ -3497,11 +3417,11 @@ namespace Server.MirEnvir
         {
             Main.GameshopLog.Clear();
 
-            for (var i = 0; i < AccountList.Count; i++)
+            for (var i = 0; i < AccountService.GetAccounts().Count; i++)
             {
-                for (var f = 0; f < AccountList[i].Characters.Count; f++)
+                for (var f = 0; f < AccountService.GetAccounts()[i].Characters.Count; f++)
                 {
-                    AccountList[i].Characters[f].GSpurchases.Clear();
+                    AccountService.GetAccounts()[i].Characters[f].GSpurchases.Clear();
                 }
             }
 
@@ -3523,13 +3443,13 @@ namespace Server.MirEnvir
         {
             if (ObjectID == id) return;
 
-            CharacterInfo player = GetCharacterInfo(id);
+            CharacterInfo player = AccountService.GetCharacterByIndex(id);
             if (player == null) return;
 
             CharacterInfo Lover = null;
             string loverName = "";
 
-            if (player.Married != 0) Lover = GetCharacterInfo(player.Married);
+            if (player.Married != 0) Lover = AccountService.GetCharacterByIndex(player.Married);
 
             if (Lover != null)
             {
@@ -3943,3 +3863,4 @@ namespace Server.MirEnvir
         }
     }
 }
+ 

@@ -1,14 +1,16 @@
-﻿using Server.MirNetwork;
+﻿using Microsoft.EntityFrameworkCore;
+using Server.MirNetwork;
 using Server.MirEnvir;
 using Server.Utils;
 using C = ClientPackets;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Server.Services;
 
 namespace Server.MirDatabase
 {
     [Table("AccountInfo")]
-    public class AccountInfo
+    public class AccountInfo : DatabaseEntity
     {       
         [NotMapped]
         protected static Envir Envir => Envir.Main;
@@ -25,18 +27,9 @@ namespace Server.MirDatabase
         [StringLength(50)]
         public string AccountID { get; set; } = string.Empty;
         
-        private string password { get; set; } = string.Empty;
-        public string Password 
-        {
-            get { return password; }
-            set
-            {                
-                Salt = Crypto.GenerateSalt();
-                password = Crypto.HashPassword(value, Salt);
-            }
-        }
-
+        public string PasswordHash { get; set; }
         public byte[] Salt { get; set; } = new byte[24];
+
         public string UserName { get; set; } = string.Empty;
         public DateTime BirthDate { get; set; }
         public string SecretQuestion { get; set; } = string.Empty;
@@ -92,7 +85,8 @@ namespace Server.MirDatabase
         {
             AccountID = p.AccountID;
 
-            Password = p.Password;
+            Salt = Crypto.GenerateSalt();
+            PasswordHash = CreatePassword(p.Password, Salt);
             UserName = p.UserName;
             SecretQuestion = p.SecretQuestion;
             SecretAnswer = p.SecretAnswer;
@@ -101,146 +95,15 @@ namespace Server.MirDatabase
             BirthDate = p.BirthDate;
             CreationDate = Envir.Now;
         }
-        public AccountInfo(BinaryReader reader)
-        {
-            Index = reader.ReadInt32();
 
-            AccountID = reader.ReadString();
-            if (Envir.LoadVersion < 94)
-                Password = reader.ReadString();
-            else
-                password = reader.ReadString();
-
-            if (Envir.LoadVersion > 93)
-                Salt = reader.ReadBytes(reader.ReadInt32());
-
-            if (Envir.LoadVersion > 97)
-                RequirePasswordChange = reader.ReadBoolean();
-
-            UserName = reader.ReadString();
-            BirthDate = DateTime.FromBinary(reader.ReadInt64());
-            SecretQuestion = reader.ReadString();
-            SecretAnswer = reader.ReadString();
-            EMailAddress = reader.ReadString();
-
-            CreationIP = reader.ReadString();
-            CreationDate = DateTime.FromBinary(reader.ReadInt64());
-
-            Banned = reader.ReadBoolean();
-            BanReason = reader.ReadString();
-            ExpiryDate = DateTime.FromBinary(reader.ReadInt64());
-
-            LastIP = reader.ReadString();
-            LastDate = DateTime.FromBinary(reader.ReadInt64());
-
-            int count = reader.ReadInt32();
-
-            for (int i = 0; i < count; i++)
-            {
-                var info = new CharacterInfo(reader, Envir.LoadVersion, Envir.LoadCustomVersion) { AccountInfo = this };
-
-                if (info.Deleted && info.DeleteDate.AddMonths(Settings.ArchiveDeletedCharacterAfterMonths) <= Envir.Now)
-                {
-                    MessageQueue.Enqueue($"Player {info.Name} has been archived due to {Settings.ArchiveDeletedCharacterAfterMonths} month deletion.");
-                    Envir.SaveArchivedCharacter(info);
-                    continue;
-                }
-
-                if (info.LastLoginDate == DateTime.MinValue && info.CreationDate.AddMonths(Settings.ArchiveInactiveCharacterAfterMonths) <= Envir.Now)
-                {
-                    MessageQueue.Enqueue($"Player {info.Name} has been archived due to no login after {Settings.ArchiveInactiveCharacterAfterMonths} months.");
-                    Envir.SaveArchivedCharacter(info);
-                    continue;
-                }
-                
-                if (info.LastLoginDate > DateTime.MinValue && info.LastLoginDate.AddMonths(Settings.ArchiveInactiveCharacterAfterMonths) <= Envir.Now)
-                {
-                    MessageQueue.Enqueue($"Player {info.Name} has been archived due to {Settings.ArchiveInactiveCharacterAfterMonths} months inactivity.");
-                    Envir.SaveArchivedCharacter(info);
-                    continue;
-                }
-
-                Characters.Add(info);
-            }
-
-            if (Envir.LoadVersion > 75)
-            {
-                HasExpandedStorage = reader.ReadBoolean();
-                ExpandedStorageExpiryDate = DateTime.FromBinary(reader.ReadInt64());
-            }
-            
-            Gold = reader.ReadUInt32();
-            if (Envir.LoadVersion >= 63) Credit = reader.ReadUInt32();
-
-            count = reader.ReadInt32();
-
-            Array.Resize(ref _storage, count);
-
-            for (int i = 0; i < count; i++)
-            {
-                if (!reader.ReadBoolean()) continue;
-                UserItem item = new UserItem(reader, Envir.LoadVersion, Envir.LoadCustomVersion);
-                if (Envir.BindItem(item) && i < Storage.Length)
-                    Storage[i] = item;
-            }
-
-            if (Envir.LoadVersion >= 10) AdminAccount = reader.ReadBoolean();
-            if (!AdminAccount)
-            {
-                for (int i = 0; i < Characters.Count; i++)
-                {
-                    if (Characters[i] == null) continue;
-                    if (Characters[i].Deleted) continue;
-                    if ((Envir.Now - Characters[i].LastLogoutDate).TotalDays > 13) continue;
-                    Envir.CheckRankUpdate(Characters[i]);
-                }
-            }
+        private String CreatePassword(String password, byte[] salt){
+            return Crypto.HashPassword(PasswordHash, Salt);
         }
 
-        public void Save(BinaryWriter writer)
-        {
-            writer.Write(Index);
-            writer.Write(AccountID);
-            writer.Write(Password);
-            writer.Write(Salt.Length);
-            writer.Write(Salt);
-            writer.Write(RequirePasswordChange);
-
-            writer.Write(UserName);
-            writer.Write(BirthDate.ToBinary());
-            writer.Write(SecretQuestion);
-            writer.Write(SecretAnswer);
-            writer.Write(EMailAddress);
-
-            writer.Write(CreationIP);
-            writer.Write(CreationDate.ToBinary());
-
-            writer.Write(Banned);
-            writer.Write(BanReason);
-            writer.Write(ExpiryDate.ToBinary());
-
-            writer.Write(LastIP);
-            writer.Write(LastDate.ToBinary());
-
-            writer.Write(Characters.Count);
-            for (int i = 0; i < Characters.Count; i++)
-            {
-                Characters[i].Save(writer);
-            }
-
-            writer.Write(HasExpandedStorage);
-            writer.Write(ExpandedStorageExpiryDate.ToBinary());
-            writer.Write(Gold);
-            writer.Write(Credit);
-            writer.Write(Storage.Length);
-            for (int i = 0; i < Storage.Length; i++)
-            {
-                writer.Write(Storage[i] != null);
-                if (Storage[i] == null) continue;
-
-                Storage[i].Save(writer);
-            }
-            writer.Write(AdminAccount);
+        //Used for the interface setting password
+        public void CreatePassword(String password){
+            Salt = Crypto.GenerateSalt();
+            PasswordHash = CreatePassword(password, Salt);
         }
 
         public List<SelectInfo> GetSelectInfo()
@@ -279,4 +142,26 @@ namespace Server.MirDatabase
             return true;
         }
     }
+
+    // Specific service for accounts.
+    /*public class AccountService : CacheService<AccountInfo>
+    {
+        // Return the correct DbSet from your GameDbContext.
+        protected override DbSet<AccountInfo> GetDbSet(GameDbContext context)
+        {
+            return context.AccountInfos;
+        }
+
+        // Override the Load method to include characters
+        public override void Load()
+        {
+            using (var context = new GameDbContext())
+            {
+                _cache = context.AccountInfos
+                    .Include(a => a.Characters)
+                    .ToList();
+                
+            }
+        }
+    }*/
 }

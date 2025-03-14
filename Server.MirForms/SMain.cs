@@ -20,7 +20,6 @@ namespace Server
         public SMain()
         {
             InitializeComponent();
-
             AutoResize();
         }
 
@@ -527,7 +526,7 @@ namespace Server
                 if (i == null) continue;
                 ListViewItem tempItem = new ListViewItem(i.Item.UniqueID.ToString()) { Tag = this };
 
-                CharacterInfo character = Envir.GetCharacterInfo((int)i.UserId);
+                CharacterInfo character = SMain.Envir.AccountService.GetCharacterByIndex((int)i.UserId);
                 if (character != null)
                     tempItem.SubItems.Add(character.Name);
                 else if (i.UserId == -1)

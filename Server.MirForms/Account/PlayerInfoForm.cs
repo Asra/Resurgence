@@ -26,7 +26,7 @@ namespace Server
                 return;
             }
 
-            Character = SMain.Envir.GetCharacterInfo(player.Name);
+            Character = SMain.Envir.AccountService.GetCharacterByName(player.Name);
 
             UpdateTabs();
         }

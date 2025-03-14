@@ -26,11 +26,11 @@ namespace Server.MirDatabase
         public uint CurrentBid { get; set; }
 
         public int SellerIndex { get; set; }
-        [ForeignKey("SellerIndex")]
+        [ForeignKey("SellerId")]
         public virtual CharacterInfo SellerInfo { get; set; }
 
         public int CurrentBuyerIndex { get; set; }
-        [ForeignKey("CurrentBuyerIndex")]
+        [ForeignKey("CurrentBuyerId")]
         public virtual CharacterInfo CurrentBuyerInfo { get; set; }
 
         public bool Expired { get; set; }

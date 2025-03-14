@@ -91,7 +91,7 @@ namespace Server
                 return;
             }
 
-            List<AccountInfo> accounts = SMain.Envir.AccountList;
+            List<AccountInfo> accounts = SMain.Envir.AccountService.GetAccounts();
 
             long totalGold = accounts
             .Where(account => !account.AdminAccount && !account.Banned)
@@ -271,7 +271,7 @@ namespace Server
 
             lock (Envir.AccountLock)
             {
-                if (SMain.Envir.AccountExists(ActiveControl.Text))
+                if (SMain.Envir.AccountService.AccountExists(ActiveControl.Text))
                 {
                     ActiveControl.BackColor = Color.Red;
                     return;
@@ -491,10 +491,8 @@ namespace Server
             if (MessageBox.Show("Are you sure you want to wipe all characters from the database?", "Notice",
                  MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
             {
-                for (int i = 0; i < SMain.Envir.AccountList.Count; i++)
+                foreach (AccountInfo account in SMain.Envir.AccountService.GetAccounts())
                 {
-                    AccountInfo account = SMain.Envir.AccountList[i];
-
                     account.Characters.Clear();
                 }
 
@@ -515,7 +513,7 @@ namespace Server
                 AccountInfoListView.BeginUpdate();
                 for (int i = 0; i < _selectedAccountInfos.Count; i++)
                 {
-                    _selectedAccountInfos[i].Password = PasswordDialog.PasswordTextBox.Text;
+                    _selectedAccountInfos[i].CreatePassword(PasswordDialog.PasswordTextBox.Text);
                     _selectedAccountInfos[i].RequirePasswordChange = true;
                     PasswordChangeCheckBox.CheckState = CheckState.Checked;
                     Update(AccountInfoListView.SelectedItems[i], _selectedAccountInfos[i]);
@@ -595,9 +593,9 @@ namespace Server
                     AccountInfo accInfo = (AccountInfo)AccountInfoListView.SelectedItems[0].Tag;
 
                     // Remove the selected account from AccountList
-                    if (SMain.Envir.AccountList.Contains(accInfo))
+                    if (SMain.Envir.AccountService.GetAccounts().Contains(accInfo))
                     {
-                        SMain.Envir.AccountList.Remove(accInfo);
+                        SMain.Envir.AccountService.GetAccounts().Remove(accInfo);
                     }
 
                     // Remove the selected item from AccountInfoListView

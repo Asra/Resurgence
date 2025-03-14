@@ -11,7 +11,7 @@ using Server.MirDatabase;
 namespace Server.Library.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20250311145932_InitialMig")]
+    [Migration("20250314093129_InitialMig")]
     partial class InitialMig
     {
         /// <inheritdoc />
@@ -130,7 +130,7 @@ namespace Server.Library.Migrations
 
                     b.HasIndex("InfoId");
 
-                    b.ToTable("GuildBuff");
+                    b.ToTable("GuildBuffs");
                 });
 
             modelBuilder.Entity("GuildBuffInfo", b =>
@@ -194,7 +194,7 @@ namespace Server.Library.Migrations
 
                     b.HasIndex("GuildRankId");
 
-                    b.ToTable("GuildMember");
+                    b.ToTable("GuildMembers");
                 });
 
             modelBuilder.Entity("GuildRank", b =>
@@ -219,7 +219,7 @@ namespace Server.Library.Migrations
 
                     b.HasIndex("GuildInfoGuildIndex");
 
-                    b.ToTable("GuildRank");
+                    b.ToTable("GuildRanks");
                 });
 
             modelBuilder.Entity("IntelligentCreatureItemFilter", b =>
@@ -361,7 +361,7 @@ namespace Server.Library.Migrations
 
                     b.HasKey("Index");
 
-                    b.ToTable("Items");
+                    b.ToTable("ItemInfos");
                 });
 
             modelBuilder.Entity("ItemRentalInformation", b =>
@@ -370,10 +370,10 @@ namespace Server.Library.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CharacterInfoIndex")
+                    b.Property<int?>("CharacterInfoId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CharacterInfoIndex1")
+                    b.Property<int?>("CharacterInfoId1")
                         .HasColumnType("INTEGER");
 
                     b.Property<ulong>("ItemId")
@@ -390,11 +390,11 @@ namespace Server.Library.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CharacterInfoIndex");
+                    b.HasIndex("CharacterInfoId");
 
-                    b.HasIndex("CharacterInfoIndex1");
+                    b.HasIndex("CharacterInfoId1");
 
-                    b.ToTable("ItemRentalInformation");
+                    b.ToTable("ItemRentalInformations");
                 });
 
             modelBuilder.Entity("RentalInformation", b =>
@@ -572,6 +572,9 @@ namespace Server.Library.Migrations
                     b.Property<uint>("CurrentBid")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("CurrentBuyerId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("CurrentBuyerIndex")
                         .HasColumnType("INTEGER");
 
@@ -587,6 +590,9 @@ namespace Server.Library.Migrations
                     b.Property<uint>("Price")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("SellerId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("SellerIndex")
                         .HasColumnType("INTEGER");
 
@@ -597,11 +603,11 @@ namespace Server.Library.Migrations
 
                     b.HasIndex("AccountInfoId");
 
-                    b.HasIndex("CurrentBuyerIndex");
+                    b.HasIndex("CurrentBuyerId");
 
                     b.HasIndex("ItemUniqueID");
 
-                    b.HasIndex("SellerIndex");
+                    b.HasIndex("SellerId");
 
                     b.ToTable("Auctions");
                 });
@@ -612,7 +618,7 @@ namespace Server.Library.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CharacterInfoIndex")
+                    b.Property<int?>("CharacterInfoId")
                         .HasColumnType("INTEGER");
 
                     b.Property<long>("ExpireTime")
@@ -626,7 +632,7 @@ namespace Server.Library.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CharacterInfoIndex");
+                    b.HasIndex("CharacterInfoId");
 
                     b.HasIndex("StatsId");
 
@@ -661,7 +667,7 @@ namespace Server.Library.Migrations
 
             modelBuilder.Entity("Server.MirDatabase.CharacterInfo", b =>
                 {
-                    b.Property<int>("Index")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -751,6 +757,9 @@ namespace Server.Library.Migrations
                     b.Property<bool>("DoubleSlash")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("EquipmentJson")
+                        .HasColumnType("TEXT");
+
                     b.Property<long>("Experience")
                         .HasColumnType("INTEGER");
 
@@ -783,6 +792,12 @@ namespace Server.Library.Migrations
 
                     b.Property<bool>("HeroSpawned")
                         .HasColumnType("INTEGER");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("InventoryJson")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsMentor")
                         .HasColumnType("INTEGER");
@@ -844,10 +859,19 @@ namespace Server.Library.Migrations
                     b.Property<int>("PearlCount")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("QuestInventoryJson")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RefineJson")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("Thrusting")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("Index");
+                    b.Property<string>("TradeJson")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("AccountInfoId");
 
@@ -860,6 +884,390 @@ namespace Server.Library.Migrations
                     b.HasDiscriminator().HasValue("CharacterInfo");
 
                     b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestArcherInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ConquestInfoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LocationX")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LocationY")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MobIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<uint>("RepairCost")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConquestInfoId");
+
+                    b.ToTable("ConquestArcherInfo");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestFlagInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ConquestInfoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ConquestInfoId1")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LocationX")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LocationY")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConquestInfoId");
+
+                    b.HasIndex("ConquestInfoId1");
+
+                    b.ToTable("ConquestFlagInfo");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestGateInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ConquestInfoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LocationX")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LocationY")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MobIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RepairCost")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConquestInfoId");
+
+                    b.ToTable("ConquestGateInfo");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestGuildArcherInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Alive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ConquestGuildInfoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConquestGuildInfoId");
+
+                    b.ToTable("ConquestGuildArcherInfo");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestGuildGateInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ConquestGuildInfoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Health")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConquestGuildInfoId");
+
+                    b.ToTable("ConquestGuildGateInfo");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestGuildInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AttackerID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<uint>("GoldStorage")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("NPCRate")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("NeedSave")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Owner")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConquestGuildInfo");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestGuildSiegeInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ConquestGuildInfoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Health")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConquestGuildInfoId");
+
+                    b.ToTable("ConquestGuildSiegeInfo");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestGuildWallInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ConquestGuildInfoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Health")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConquestGuildInfoId");
+
+                    b.ToTable("ConquestGuildWallInfo");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ControlPointIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.PrimitiveCollection<string>("ExtraMaps")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("FlagIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Friday")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("FullMap")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("Game")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GateIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GuardIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KingLocationX")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KingLocationY")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ushort>("KingSize")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LocationX")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LocationY")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MapIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Monday")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PalaceIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Saturday")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SiegeIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ushort>("Size")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("StartHour")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Sunday")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Thursday")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Tuesday")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("WallIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("WarLength")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Wednesday")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConquestInfo");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestSiegeInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ConquestInfoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LocationX")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LocationY")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MobIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RepairCost")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConquestInfoId");
+
+                    b.ToTable("ConquestSiegeInfo");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestWallInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ConquestInfoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LocationX")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LocationY")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MobIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RepairCost")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConquestInfoId");
+
+                    b.ToTable("ConquestWallInfo");
                 });
 
             modelBuilder.Entity("Server.MirDatabase.DragonInfo", b =>
@@ -921,7 +1329,7 @@ namespace Server.Library.Migrations
                     b.Property<bool>("Blocked")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CharacterInfoIndex")
+                    b.Property<int?>("CharacterInfoId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Index")
@@ -932,7 +1340,7 @@ namespace Server.Library.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CharacterInfoIndex");
+                    b.HasIndex("CharacterInfoId");
 
                     b.ToTable("FriendInfo");
                 });
@@ -1497,7 +1905,7 @@ namespace Server.Library.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CharacterInfoIndex")
+                    b.Property<int?>("CharacterInfoId")
                         .HasColumnType("INTEGER");
 
                     b.Property<uint>("Experience")
@@ -1520,7 +1928,7 @@ namespace Server.Library.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CharacterInfoIndex");
+                    b.HasIndex("CharacterInfoId");
 
                     b.ToTable("PetInfo");
                 });
@@ -1722,7 +2130,7 @@ namespace Server.Library.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CharacterInfoIndex")
+                    b.Property<int?>("CharacterInfoId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("EndDateTime")
@@ -1742,11 +2150,48 @@ namespace Server.Library.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CharacterInfoIndex");
+                    b.HasIndex("CharacterInfoId");
 
                     b.HasIndex("InfoIndex");
 
                     b.ToTable("QuestProgressInfo");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.RecipeInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("Chance")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<uint>("Gold")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ulong?>("ItemUniqueID")
+                        .HasColumnType("INTEGER");
+
+                    b.PrimitiveCollection<string>("RequiredClass")
+                        .HasColumnType("TEXT");
+
+                    b.PrimitiveCollection<string>("RequiredFlag")
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte?>("RequiredGender")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<ushort?>("RequiredLevel")
+                        .HasColumnType("INTEGER");
+
+                    b.PrimitiveCollection<string>("RequiredQuest")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemUniqueID");
+
+                    b.ToTable("RecipeInfo");
                 });
 
             modelBuilder.Entity("Server.MirDatabase.RespawnInfo", b =>
@@ -1838,7 +2283,7 @@ namespace Server.Library.Migrations
                     b.Property<long>("BlackstoneTime")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CharacterInfoIndex")
+                    b.Property<int?>("CharacterInfoId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("CustomName")
@@ -1870,7 +2315,7 @@ namespace Server.Library.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CharacterInfoIndex");
+                    b.HasIndex("CharacterInfoId");
 
                     b.HasIndex("FilterId");
 
@@ -1888,7 +2333,7 @@ namespace Server.Library.Migrations
                     b.Property<long>("CastTime")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CharacterInfoIndex")
+                    b.Property<int?>("CharacterInfoId")
                         .HasColumnType("INTEGER");
 
                     b.Property<ushort>("Experience")
@@ -1911,7 +2356,7 @@ namespace Server.Library.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CharacterInfoIndex");
+                    b.HasIndex("CharacterInfoId");
 
                     b.HasIndex("InfoId");
 
@@ -1951,7 +2396,7 @@ namespace Server.Library.Migrations
                     b.Property<int>("RecipientIndex")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("RecipientInfoIndex")
+                    b.Property<int?>("RecipientInfoId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Sender")
@@ -1959,7 +2404,7 @@ namespace Server.Library.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RecipientInfoIndex");
+                    b.HasIndex("RecipientInfoId");
 
                     b.ToTable("MailInfo");
                 });
@@ -2215,6 +2660,12 @@ namespace Server.Library.Migrations
                     b.Property<ulong?>("ParentItemID")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("RecipeInfoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("RecipeInfoId1")
+                        .HasColumnType("INTEGER");
+
                     b.Property<byte>("RefineAdded")
                         .HasColumnType("INTEGER");
 
@@ -2254,6 +2705,10 @@ namespace Server.Library.Migrations
                     b.HasIndex("MountInfoId");
 
                     b.HasIndex("ParentItemID");
+
+                    b.HasIndex("RecipeInfoId");
+
+                    b.HasIndex("RecipeInfoId1");
 
                     b.HasIndex("RentalInformationId");
 
@@ -2344,12 +2799,12 @@ namespace Server.Library.Migrations
             modelBuilder.Entity("ItemRentalInformation", b =>
                 {
                     b.HasOne("Server.MirDatabase.CharacterInfo", null)
-                        .WithMany("RentedItemsToRemove")
-                        .HasForeignKey("CharacterInfoIndex");
+                        .WithMany("RentedItems")
+                        .HasForeignKey("CharacterInfoId");
 
                     b.HasOne("Server.MirDatabase.CharacterInfo", null)
-                        .WithMany("RentedItems")
-                        .HasForeignKey("CharacterInfoIndex1");
+                        .WithMany("RentedItemsToRemove")
+                        .HasForeignKey("CharacterInfoId1");
                 });
 
             modelBuilder.Entity("Server.MirDatabase.AuctionInfo", b =>
@@ -2360,9 +2815,7 @@ namespace Server.Library.Migrations
 
                     b.HasOne("Server.MirDatabase.CharacterInfo", "CurrentBuyerInfo")
                         .WithMany()
-                        .HasForeignKey("CurrentBuyerIndex")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CurrentBuyerId");
 
                     b.HasOne("UserItem", "Item")
                         .WithMany()
@@ -2370,9 +2823,7 @@ namespace Server.Library.Migrations
 
                     b.HasOne("Server.MirDatabase.CharacterInfo", "SellerInfo")
                         .WithMany()
-                        .HasForeignKey("SellerIndex")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SellerId");
 
                     b.Navigation("CurrentBuyerInfo");
 
@@ -2385,7 +2836,7 @@ namespace Server.Library.Migrations
                 {
                     b.HasOne("Server.MirDatabase.CharacterInfo", null)
                         .WithMany("Buffs")
-                        .HasForeignKey("CharacterInfoIndex");
+                        .HasForeignKey("CharacterInfoId");
 
                     b.HasOne("Stats", "Stats")
                         .WithMany()
@@ -2415,11 +2866,78 @@ namespace Server.Library.Migrations
                     b.Navigation("Mount");
                 });
 
+            modelBuilder.Entity("Server.MirDatabase.ConquestArcherInfo", b =>
+                {
+                    b.HasOne("Server.MirDatabase.ConquestInfo", null)
+                        .WithMany("ConquestGuards")
+                        .HasForeignKey("ConquestInfoId");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestFlagInfo", b =>
+                {
+                    b.HasOne("Server.MirDatabase.ConquestInfo", null)
+                        .WithMany("ConquestFlags")
+                        .HasForeignKey("ConquestInfoId");
+
+                    b.HasOne("Server.MirDatabase.ConquestInfo", null)
+                        .WithMany("ControlPoints")
+                        .HasForeignKey("ConquestInfoId1");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestGateInfo", b =>
+                {
+                    b.HasOne("Server.MirDatabase.ConquestInfo", null)
+                        .WithMany("ConquestGates")
+                        .HasForeignKey("ConquestInfoId");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestGuildArcherInfo", b =>
+                {
+                    b.HasOne("Server.MirDatabase.ConquestGuildInfo", null)
+                        .WithMany("ArcherList")
+                        .HasForeignKey("ConquestGuildInfoId");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestGuildGateInfo", b =>
+                {
+                    b.HasOne("Server.MirDatabase.ConquestGuildInfo", null)
+                        .WithMany("GateList")
+                        .HasForeignKey("ConquestGuildInfoId");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestGuildSiegeInfo", b =>
+                {
+                    b.HasOne("Server.MirDatabase.ConquestGuildInfo", null)
+                        .WithMany("SiegeList")
+                        .HasForeignKey("ConquestGuildInfoId");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestGuildWallInfo", b =>
+                {
+                    b.HasOne("Server.MirDatabase.ConquestGuildInfo", null)
+                        .WithMany("WallList")
+                        .HasForeignKey("ConquestGuildInfoId");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestSiegeInfo", b =>
+                {
+                    b.HasOne("Server.MirDatabase.ConquestInfo", null)
+                        .WithMany("ConquestSieges")
+                        .HasForeignKey("ConquestInfoId");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestWallInfo", b =>
+                {
+                    b.HasOne("Server.MirDatabase.ConquestInfo", null)
+                        .WithMany("ConquestWalls")
+                        .HasForeignKey("ConquestInfoId");
+                });
+
             modelBuilder.Entity("Server.MirDatabase.FriendInfo", b =>
                 {
                     b.HasOne("Server.MirDatabase.CharacterInfo", null)
                         .WithMany("Friends")
-                        .HasForeignKey("CharacterInfoIndex");
+                        .HasForeignKey("CharacterInfoId");
                 });
 
             modelBuilder.Entity("Server.MirDatabase.MineZone", b =>
@@ -2456,7 +2974,7 @@ namespace Server.Library.Migrations
                 {
                     b.HasOne("Server.MirDatabase.CharacterInfo", null)
                         .WithMany("Pets")
-                        .HasForeignKey("CharacterInfoIndex");
+                        .HasForeignKey("CharacterInfoId");
                 });
 
             modelBuilder.Entity("Server.MirDatabase.QuestFlagTaskProgress", b =>
@@ -2520,13 +3038,22 @@ namespace Server.Library.Migrations
                 {
                     b.HasOne("Server.MirDatabase.CharacterInfo", null)
                         .WithMany("CurrentQuests")
-                        .HasForeignKey("CharacterInfoIndex");
+                        .HasForeignKey("CharacterInfoId");
 
                     b.HasOne("Server.MirDatabase.QuestInfo", "Info")
                         .WithMany()
                         .HasForeignKey("InfoIndex");
 
                     b.Navigation("Info");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.RecipeInfo", b =>
+                {
+                    b.HasOne("UserItem", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemUniqueID");
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("Server.MirDatabase.RespawnInfo", b =>
@@ -2555,7 +3082,7 @@ namespace Server.Library.Migrations
                 {
                     b.HasOne("Server.MirDatabase.CharacterInfo", null)
                         .WithMany("IntelligentCreatures")
-                        .HasForeignKey("CharacterInfoIndex");
+                        .HasForeignKey("CharacterInfoId");
 
                     b.HasOne("IntelligentCreatureItemFilter", "Filter")
                         .WithMany()
@@ -2574,7 +3101,7 @@ namespace Server.Library.Migrations
                 {
                     b.HasOne("Server.MirDatabase.CharacterInfo", null)
                         .WithMany("Magics")
-                        .HasForeignKey("CharacterInfoIndex");
+                        .HasForeignKey("CharacterInfoId");
 
                     b.HasOne("Server.MirDatabase.MagicInfo", "Info")
                         .WithMany()
@@ -2587,7 +3114,7 @@ namespace Server.Library.Migrations
                 {
                     b.HasOne("Server.MirDatabase.CharacterInfo", "RecipientInfo")
                         .WithMany("Mail")
-                        .HasForeignKey("RecipientInfoIndex");
+                        .HasForeignKey("RecipientInfoId");
 
                     b.Navigation("RecipientInfo");
                 });
@@ -2630,6 +3157,14 @@ namespace Server.Library.Migrations
                     b.HasOne("UserItem", null)
                         .WithMany("Slots")
                         .HasForeignKey("ParentItemID");
+
+                    b.HasOne("Server.MirDatabase.RecipeInfo", null)
+                        .WithMany("Ingredients")
+                        .HasForeignKey("RecipeInfoId");
+
+                    b.HasOne("Server.MirDatabase.RecipeInfo", null)
+                        .WithMany("Tools")
+                        .HasForeignKey("RecipeInfoId1");
 
                     b.HasOne("RentalInformation", "RentalInformation")
                         .WithMany()
@@ -2690,6 +3225,32 @@ namespace Server.Library.Migrations
                     b.Navigation("RentedItemsToRemove");
                 });
 
+            modelBuilder.Entity("Server.MirDatabase.ConquestGuildInfo", b =>
+                {
+                    b.Navigation("ArcherList");
+
+                    b.Navigation("GateList");
+
+                    b.Navigation("SiegeList");
+
+                    b.Navigation("WallList");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.ConquestInfo", b =>
+                {
+                    b.Navigation("ConquestFlags");
+
+                    b.Navigation("ConquestGates");
+
+                    b.Navigation("ConquestGuards");
+
+                    b.Navigation("ConquestSieges");
+
+                    b.Navigation("ConquestWalls");
+
+                    b.Navigation("ControlPoints");
+                });
+
             modelBuilder.Entity("Server.MirDatabase.GuildInfo", b =>
                 {
                     b.Navigation("BuffList");
@@ -2722,6 +3283,13 @@ namespace Server.Library.Migrations
                     b.Navigation("ItemTaskCount");
 
                     b.Navigation("KillTaskCount");
+                });
+
+            modelBuilder.Entity("Server.MirDatabase.RecipeInfo", b =>
+                {
+                    b.Navigation("Ingredients");
+
+                    b.Navigation("Tools");
                 });
 
             modelBuilder.Entity("Server.MirEnvir.MailInfo", b =>

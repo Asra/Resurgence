@@ -78,6 +78,64 @@ namespace Server.Library.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ConquestGuildInfo",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Owner = table.Column<int>(type: "INTEGER", nullable: false),
+                    GoldStorage = table.Column<uint>(type: "INTEGER", nullable: false),
+                    AttackerID = table.Column<int>(type: "INTEGER", nullable: false),
+                    NPCRate = table.Column<byte>(type: "INTEGER", nullable: false),
+                    NeedSave = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConquestGuildInfo", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConquestInfo",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
+                    FullMap = table.Column<bool>(type: "INTEGER", nullable: false),
+                    LocationX = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocationY = table.Column<int>(type: "INTEGER", nullable: false),
+                    Size = table.Column<ushort>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    MapIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    PalaceIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    ExtraMaps = table.Column<string>(type: "TEXT", nullable: true),
+                    GuardIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    GateIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    WallIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    SiegeIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    FlagIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    StartHour = table.Column<byte>(type: "INTEGER", nullable: false),
+                    WarLength = table.Column<int>(type: "INTEGER", nullable: false),
+                    Type = table.Column<byte>(type: "INTEGER", nullable: false),
+                    Game = table.Column<byte>(type: "INTEGER", nullable: false),
+                    Monday = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Tuesday = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Wednesday = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Thursday = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Friday = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Saturday = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Sunday = table.Column<bool>(type: "INTEGER", nullable: false),
+                    KingLocationX = table.Column<int>(type: "INTEGER", nullable: false),
+                    KingLocationY = table.Column<int>(type: "INTEGER", nullable: false),
+                    KingSize = table.Column<ushort>(type: "INTEGER", nullable: false),
+                    ControlPointIndex = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConquestInfo", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DragonInfo",
                 columns: table => new
                 {
@@ -211,7 +269,7 @@ namespace Server.Library.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Items",
+                name: "ItemInfos",
                 columns: table => new
                 {
                     Index = table.Column<int>(type: "INTEGER", nullable: false)
@@ -249,7 +307,7 @@ namespace Server.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Items", x => x.Index);
+                    table.PrimaryKey("PK_ItemInfos", x => x.Index);
                 });
 
             migrationBuilder.CreateTable(
@@ -414,7 +472,212 @@ namespace Server.Library.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GuildRank",
+                name: "ConquestGuildArcherInfo",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
+                    Alive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    ConquestGuildInfoId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConquestGuildArcherInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ConquestGuildArcherInfo_ConquestGuildInfo_ConquestGuildInfoId",
+                        column: x => x.ConquestGuildInfoId,
+                        principalTable: "ConquestGuildInfo",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConquestGuildGateInfo",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
+                    Health = table.Column<int>(type: "INTEGER", nullable: false),
+                    ConquestGuildInfoId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConquestGuildGateInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ConquestGuildGateInfo_ConquestGuildInfo_ConquestGuildInfoId",
+                        column: x => x.ConquestGuildInfoId,
+                        principalTable: "ConquestGuildInfo",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConquestGuildSiegeInfo",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
+                    Health = table.Column<int>(type: "INTEGER", nullable: false),
+                    ConquestGuildInfoId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConquestGuildSiegeInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ConquestGuildSiegeInfo_ConquestGuildInfo_ConquestGuildInfoId",
+                        column: x => x.ConquestGuildInfoId,
+                        principalTable: "ConquestGuildInfo",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConquestGuildWallInfo",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
+                    Health = table.Column<int>(type: "INTEGER", nullable: false),
+                    ConquestGuildInfoId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConquestGuildWallInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ConquestGuildWallInfo_ConquestGuildInfo_ConquestGuildInfoId",
+                        column: x => x.ConquestGuildInfoId,
+                        principalTable: "ConquestGuildInfo",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConquestArcherInfo",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocationX = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocationY = table.Column<int>(type: "INTEGER", nullable: false),
+                    MobIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    RepairCost = table.Column<uint>(type: "INTEGER", nullable: false),
+                    ConquestInfoId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConquestArcherInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ConquestArcherInfo_ConquestInfo_ConquestInfoId",
+                        column: x => x.ConquestInfoId,
+                        principalTable: "ConquestInfo",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConquestFlagInfo",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocationX = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocationY = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    FileName = table.Column<string>(type: "TEXT", nullable: true),
+                    ConquestInfoId = table.Column<int>(type: "INTEGER", nullable: true),
+                    ConquestInfoId1 = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConquestFlagInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ConquestFlagInfo_ConquestInfo_ConquestInfoId",
+                        column: x => x.ConquestInfoId,
+                        principalTable: "ConquestInfo",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ConquestFlagInfo_ConquestInfo_ConquestInfoId1",
+                        column: x => x.ConquestInfoId1,
+                        principalTable: "ConquestInfo",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConquestGateInfo",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocationX = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocationY = table.Column<int>(type: "INTEGER", nullable: false),
+                    MobIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    RepairCost = table.Column<int>(type: "INTEGER", nullable: false),
+                    ConquestInfoId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConquestGateInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ConquestGateInfo_ConquestInfo_ConquestInfoId",
+                        column: x => x.ConquestInfoId,
+                        principalTable: "ConquestInfo",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConquestSiegeInfo",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocationX = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocationY = table.Column<int>(type: "INTEGER", nullable: false),
+                    MobIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    RepairCost = table.Column<int>(type: "INTEGER", nullable: false),
+                    ConquestInfoId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConquestSiegeInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ConquestSiegeInfo_ConquestInfo_ConquestInfoId",
+                        column: x => x.ConquestInfoId,
+                        principalTable: "ConquestInfo",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConquestWallInfo",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocationX = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocationY = table.Column<int>(type: "INTEGER", nullable: false),
+                    MobIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    RepairCost = table.Column<int>(type: "INTEGER", nullable: false),
+                    ConquestInfoId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConquestWallInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ConquestWallInfo_ConquestInfo_ConquestInfoId",
+                        column: x => x.ConquestInfoId,
+                        principalTable: "ConquestInfo",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GuildRanks",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -426,9 +689,9 @@ namespace Server.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GuildRank", x => x.Id);
+                    table.PrimaryKey("PK_GuildRanks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GuildRank_GuildInfos_GuildInfoGuildIndex",
+                        name: "FK_GuildRanks_GuildInfos_GuildInfoGuildIndex",
                         column: x => x.GuildInfoGuildIndex,
                         principalTable: "GuildInfos",
                         principalColumn: "GuildIndex");
@@ -459,9 +722,9 @@ namespace Server.Library.Migrations
                 {
                     table.PrimaryKey("PK_GameShopItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GameShopItems_Items_ItemIndex",
+                        name: "FK_GameShopItems_ItemInfos_ItemIndex",
                         column: x => x.ItemIndex,
-                        principalTable: "Items",
+                        principalTable: "ItemInfos",
                         principalColumn: "Index",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -480,9 +743,9 @@ namespace Server.Library.Migrations
                 {
                     table.PrimaryKey("PK_QuestItemTask", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_QuestItemTask_Items_ItemIndex",
+                        name: "FK_QuestItemTask_ItemInfos_ItemIndex",
                         column: x => x.ItemIndex,
-                        principalTable: "Items",
+                        principalTable: "ItemInfos",
                         principalColumn: "Index");
                 });
 
@@ -557,9 +820,9 @@ namespace Server.Library.Migrations
                 {
                     table.PrimaryKey("PK_Stats", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Stats_Items_ItemInfoIndex",
+                        name: "FK_Stats_ItemInfos_ItemInfoIndex",
                         column: x => x.ItemInfoIndex,
-                        principalTable: "Items",
+                        principalTable: "ItemInfos",
                         principalColumn: "Index");
                 });
 
@@ -713,7 +976,7 @@ namespace Server.Library.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GuildMember",
+                name: "GuildMembers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -726,11 +989,11 @@ namespace Server.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GuildMember", x => x.Id);
+                    table.PrimaryKey("PK_GuildMembers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GuildMember_GuildRank_GuildRankId",
+                        name: "FK_GuildMembers_GuildRanks_GuildRankId",
                         column: x => x.GuildRankId,
-                        principalTable: "GuildRank",
+                        principalTable: "GuildRanks",
                         principalColumn: "Id");
                 });
 
@@ -796,7 +1059,7 @@ namespace Server.Library.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GuildBuff",
+                name: "GuildBuffs",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -808,15 +1071,15 @@ namespace Server.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GuildBuff", x => x.Id);
+                    table.PrimaryKey("PK_GuildBuffs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GuildBuff_GuildBuffInfos_InfoId",
+                        name: "FK_GuildBuffs_GuildBuffInfos_InfoId",
                         column: x => x.InfoId,
                         principalTable: "GuildBuffInfos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_GuildBuff_GuildInfos_GuildInfoGuildIndex",
+                        name: "FK_GuildBuffs_GuildInfos_GuildInfoGuildIndex",
                         column: x => x.GuildInfoGuildIndex,
                         principalTable: "GuildInfos",
                         principalColumn: "GuildIndex");
@@ -853,7 +1116,9 @@ namespace Server.Library.Migrations
                     Price = table.Column<uint>(type: "INTEGER", nullable: false),
                     CurrentBid = table.Column<uint>(type: "INTEGER", nullable: false),
                     SellerIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    SellerId = table.Column<int>(type: "INTEGER", nullable: true),
                     CurrentBuyerIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    CurrentBuyerId = table.Column<int>(type: "INTEGER", nullable: true),
                     Expired = table.Column<bool>(type: "INTEGER", nullable: false),
                     Sold = table.Column<bool>(type: "INTEGER", nullable: false),
                     ItemType = table.Column<byte>(type: "INTEGER", nullable: false),
@@ -878,7 +1143,7 @@ namespace Server.Library.Migrations
                     ObjectID = table.Column<uint>(type: "INTEGER", nullable: false),
                     ExpireTime = table.Column<long>(type: "INTEGER", nullable: false),
                     StatsId = table.Column<int>(type: "INTEGER", nullable: true),
-                    CharacterInfoIndex = table.Column<int>(type: "INTEGER", nullable: true)
+                    CharacterInfoId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -894,8 +1159,9 @@ namespace Server.Library.Migrations
                 name: "CharacterInfo",
                 columns: table => new
                 {
-                    Index = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Level = table.Column<ushort>(type: "INTEGER", nullable: false),
                     Class = table.Column<byte>(type: "INTEGER", nullable: false),
@@ -943,6 +1209,11 @@ namespace Server.Library.Migrations
                     DoubleSlash = table.Column<bool>(type: "INTEGER", nullable: false),
                     MentalState = table.Column<byte>(type: "INTEGER", nullable: false),
                     MentalStateLvl = table.Column<byte>(type: "INTEGER", nullable: false),
+                    InventoryJson = table.Column<string>(type: "TEXT", nullable: true),
+                    EquipmentJson = table.Column<string>(type: "TEXT", nullable: true),
+                    TradeJson = table.Column<string>(type: "TEXT", nullable: true),
+                    QuestInventoryJson = table.Column<string>(type: "TEXT", nullable: true),
+                    RefineJson = table.Column<string>(type: "TEXT", nullable: true),
                     HasRentedItem = table.Column<bool>(type: "INTEGER", nullable: false),
                     CurrentRefineUniqueID = table.Column<ulong>(type: "INTEGER", nullable: true),
                     CollectTime = table.Column<long>(type: "INTEGER", nullable: false),
@@ -966,7 +1237,7 @@ namespace Server.Library.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CharacterInfo", x => x.Index);
+                    table.PrimaryKey("PK_CharacterInfo", x => x.Id);
                     table.ForeignKey(
                         name: "FK_CharacterInfo_AccountInfo_AccountInfoId",
                         column: x => x.AccountInfoId,
@@ -988,20 +1259,20 @@ namespace Server.Library.Migrations
                     Index = table.Column<int>(type: "INTEGER", nullable: false),
                     Blocked = table.Column<bool>(type: "INTEGER", nullable: false),
                     Memo = table.Column<string>(type: "TEXT", nullable: true),
-                    CharacterInfoIndex = table.Column<int>(type: "INTEGER", nullable: true)
+                    CharacterInfoId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FriendInfo", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FriendInfo_CharacterInfo_CharacterInfoIndex",
-                        column: x => x.CharacterInfoIndex,
+                        name: "FK_FriendInfo_CharacterInfo_CharacterInfoId",
+                        column: x => x.CharacterInfoId,
                         principalTable: "CharacterInfo",
-                        principalColumn: "Index");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemRentalInformation",
+                name: "ItemRentalInformations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -1010,22 +1281,22 @@ namespace Server.Library.Migrations
                     ItemName = table.Column<string>(type: "TEXT", nullable: true),
                     RentingPlayerName = table.Column<string>(type: "TEXT", nullable: true),
                     ItemReturnDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    CharacterInfoIndex = table.Column<int>(type: "INTEGER", nullable: true),
-                    CharacterInfoIndex1 = table.Column<int>(type: "INTEGER", nullable: true)
+                    CharacterInfoId = table.Column<int>(type: "INTEGER", nullable: true),
+                    CharacterInfoId1 = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItemRentalInformation", x => x.Id);
+                    table.PrimaryKey("PK_ItemRentalInformations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ItemRentalInformation_CharacterInfo_CharacterInfoIndex",
-                        column: x => x.CharacterInfoIndex,
+                        name: "FK_ItemRentalInformations_CharacterInfo_CharacterInfoId",
+                        column: x => x.CharacterInfoId,
                         principalTable: "CharacterInfo",
-                        principalColumn: "Index");
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ItemRentalInformation_CharacterInfo_CharacterInfoIndex1",
-                        column: x => x.CharacterInfoIndex1,
+                        name: "FK_ItemRentalInformations_CharacterInfo_CharacterInfoId1",
+                        column: x => x.CharacterInfoId1,
                         principalTable: "CharacterInfo",
-                        principalColumn: "Index");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1037,7 +1308,7 @@ namespace Server.Library.Migrations
                     MailID = table.Column<ulong>(type: "INTEGER", nullable: false),
                     Sender = table.Column<string>(type: "TEXT", nullable: true),
                     RecipientIndex = table.Column<int>(type: "INTEGER", nullable: false),
-                    RecipientInfoIndex = table.Column<int>(type: "INTEGER", nullable: true),
+                    RecipientInfoId = table.Column<int>(type: "INTEGER", nullable: true),
                     Message = table.Column<string>(type: "TEXT", nullable: true),
                     Gold = table.Column<uint>(type: "INTEGER", nullable: false),
                     DateSent = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -1050,10 +1321,10 @@ namespace Server.Library.Migrations
                 {
                     table.PrimaryKey("PK_MailInfo", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MailInfo_CharacterInfo_RecipientInfoIndex",
-                        column: x => x.RecipientInfoIndex,
+                        name: "FK_MailInfo_CharacterInfo_RecipientInfoId",
+                        column: x => x.RecipientInfoId,
                         principalTable: "CharacterInfo",
-                        principalColumn: "Index");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1068,16 +1339,16 @@ namespace Server.Library.Migrations
                     Level = table.Column<byte>(type: "INTEGER", nullable: false),
                     MaxPetLevel = table.Column<byte>(type: "INTEGER", nullable: false),
                     TameTime = table.Column<long>(type: "INTEGER", nullable: false),
-                    CharacterInfoIndex = table.Column<int>(type: "INTEGER", nullable: true)
+                    CharacterInfoId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PetInfo", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PetInfo_CharacterInfo_CharacterInfoIndex",
-                        column: x => x.CharacterInfoIndex,
+                        name: "FK_PetInfo_CharacterInfo_CharacterInfoId",
+                        column: x => x.CharacterInfoId,
                         principalTable: "CharacterInfo",
-                        principalColumn: "Index");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1091,16 +1362,16 @@ namespace Server.Library.Migrations
                     StartDateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     EndDateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     TaskList = table.Column<string>(type: "TEXT", nullable: true),
-                    CharacterInfoIndex = table.Column<int>(type: "INTEGER", nullable: true)
+                    CharacterInfoId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_QuestProgressInfo", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_QuestProgressInfo_CharacterInfo_CharacterInfoIndex",
-                        column: x => x.CharacterInfoIndex,
+                        name: "FK_QuestProgressInfo_CharacterInfo_CharacterInfoId",
+                        column: x => x.CharacterInfoId,
                         principalTable: "CharacterInfo",
-                        principalColumn: "Index");
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_QuestProgressInfo_QuestInfo_InfoIndex",
                         column: x => x.InfoIndex,
@@ -1124,16 +1395,16 @@ namespace Server.Library.Migrations
                     Expire = table.Column<DateTime>(type: "TEXT", nullable: false),
                     BlackstoneTime = table.Column<long>(type: "INTEGER", nullable: false),
                     MaintainFoodTime = table.Column<long>(type: "INTEGER", nullable: false),
-                    CharacterInfoIndex = table.Column<int>(type: "INTEGER", nullable: true)
+                    CharacterInfoId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserIntelligentCreature", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserIntelligentCreature_CharacterInfo_CharacterInfoIndex",
-                        column: x => x.CharacterInfoIndex,
+                        name: "FK_UserIntelligentCreature_CharacterInfo_CharacterInfoId",
+                        column: x => x.CharacterInfoId,
                         principalTable: "CharacterInfo",
-                        principalColumn: "Index");
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserIntelligentCreature_IntelligentCreatureInfo_InfoId",
                         column: x => x.InfoId,
@@ -1159,104 +1430,21 @@ namespace Server.Library.Migrations
                     Experience = table.Column<ushort>(type: "INTEGER", nullable: false),
                     IsTempSpell = table.Column<bool>(type: "INTEGER", nullable: false),
                     CastTime = table.Column<long>(type: "INTEGER", nullable: false),
-                    CharacterInfoIndex = table.Column<int>(type: "INTEGER", nullable: true)
+                    CharacterInfoId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserMagic", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserMagic_CharacterInfo_CharacterInfoIndex",
-                        column: x => x.CharacterInfoIndex,
+                        name: "FK_UserMagic_CharacterInfo_CharacterInfoId",
+                        column: x => x.CharacterInfoId,
                         principalTable: "CharacterInfo",
-                        principalColumn: "Index");
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserMagic_MagicInfo_InfoId",
                         column: x => x.InfoId,
                         principalTable: "MagicInfo",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserItems",
-                columns: table => new
-                {
-                    UniqueID = table.Column<ulong>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ItemIndex = table.Column<int>(type: "INTEGER", nullable: false),
-                    CurrentDura = table.Column<ushort>(type: "INTEGER", nullable: false),
-                    MaxDura = table.Column<ushort>(type: "INTEGER", nullable: false),
-                    Count = table.Column<ushort>(type: "INTEGER", nullable: false),
-                    GemCount = table.Column<ushort>(type: "INTEGER", nullable: false),
-                    RefinedValue = table.Column<byte>(type: "INTEGER", nullable: false),
-                    RefineAdded = table.Column<byte>(type: "INTEGER", nullable: false),
-                    RefineSuccessChance = table.Column<int>(type: "INTEGER", nullable: false),
-                    DuraChanged = table.Column<bool>(type: "INTEGER", nullable: false),
-                    SoulBoundId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Identified = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Cursed = table.Column<bool>(type: "INTEGER", nullable: false),
-                    WeddingRing = table.Column<int>(type: "INTEGER", nullable: false),
-                    SlotsJson = table.Column<string>(type: "TEXT", nullable: true),
-                    BuybackExpiryDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    ExpireInfoId = table.Column<int>(type: "INTEGER", nullable: true),
-                    RentalInformationId = table.Column<int>(type: "INTEGER", nullable: true),
-                    SealedInfoId = table.Column<int>(type: "INTEGER", nullable: true),
-                    IsShopItem = table.Column<bool>(type: "INTEGER", nullable: false),
-                    GMMade = table.Column<bool>(type: "INTEGER", nullable: false),
-                    AwakeId = table.Column<int>(type: "INTEGER", nullable: true),
-                    AddedStatsId = table.Column<int>(type: "INTEGER", nullable: true),
-                    MailInfoId = table.Column<int>(type: "INTEGER", nullable: true),
-                    MountInfoId = table.Column<int>(type: "INTEGER", nullable: true),
-                    ParentItemID = table.Column<ulong>(type: "INTEGER", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserItems", x => x.UniqueID);
-                    table.ForeignKey(
-                        name: "FK_UserItems_Awakes_AwakeId",
-                        column: x => x.AwakeId,
-                        principalTable: "Awakes",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_UserItems_ExpireInfos_ExpireInfoId",
-                        column: x => x.ExpireInfoId,
-                        principalTable: "ExpireInfos",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_UserItems_Items_ItemIndex",
-                        column: x => x.ItemIndex,
-                        principalTable: "Items",
-                        principalColumn: "Index",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserItems_MailInfo_MailInfoId",
-                        column: x => x.MailInfoId,
-                        principalTable: "MailInfo",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_UserItems_MountInfo_MountInfoId",
-                        column: x => x.MountInfoId,
-                        principalTable: "MountInfo",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_UserItems_RentalInformations_RentalInformationId",
-                        column: x => x.RentalInformationId,
-                        principalTable: "RentalInformations",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_UserItems_SealedInfos_SealedInfoId",
-                        column: x => x.SealedInfoId,
-                        principalTable: "SealedInfos",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_UserItems_Stats_AddedStatsId",
-                        column: x => x.AddedStatsId,
-                        principalTable: "Stats",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_UserItems_UserItems_ParentItemID",
-                        column: x => x.ParentItemID,
-                        principalTable: "UserItems",
-                        principalColumn: "UniqueID");
                 });
 
             migrationBuilder.CreateTable(
@@ -1337,15 +1525,130 @@ namespace Server.Library.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "RecipeInfo",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ItemUniqueID = table.Column<ulong>(type: "INTEGER", nullable: true),
+                    RequiredFlag = table.Column<string>(type: "TEXT", nullable: true),
+                    RequiredLevel = table.Column<ushort>(type: "INTEGER", nullable: true),
+                    RequiredQuest = table.Column<string>(type: "TEXT", nullable: true),
+                    RequiredClass = table.Column<string>(type: "TEXT", nullable: true),
+                    RequiredGender = table.Column<byte>(type: "INTEGER", nullable: true),
+                    Chance = table.Column<byte>(type: "INTEGER", nullable: false),
+                    Gold = table.Column<uint>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RecipeInfo", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserItems",
+                columns: table => new
+                {
+                    UniqueID = table.Column<ulong>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ItemIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    CurrentDura = table.Column<ushort>(type: "INTEGER", nullable: false),
+                    MaxDura = table.Column<ushort>(type: "INTEGER", nullable: false),
+                    Count = table.Column<ushort>(type: "INTEGER", nullable: false),
+                    GemCount = table.Column<ushort>(type: "INTEGER", nullable: false),
+                    RefinedValue = table.Column<byte>(type: "INTEGER", nullable: false),
+                    RefineAdded = table.Column<byte>(type: "INTEGER", nullable: false),
+                    RefineSuccessChance = table.Column<int>(type: "INTEGER", nullable: false),
+                    DuraChanged = table.Column<bool>(type: "INTEGER", nullable: false),
+                    SoulBoundId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Identified = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Cursed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    WeddingRing = table.Column<int>(type: "INTEGER", nullable: false),
+                    SlotsJson = table.Column<string>(type: "TEXT", nullable: true),
+                    BuybackExpiryDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ExpireInfoId = table.Column<int>(type: "INTEGER", nullable: true),
+                    RentalInformationId = table.Column<int>(type: "INTEGER", nullable: true),
+                    SealedInfoId = table.Column<int>(type: "INTEGER", nullable: true),
+                    IsShopItem = table.Column<bool>(type: "INTEGER", nullable: false),
+                    GMMade = table.Column<bool>(type: "INTEGER", nullable: false),
+                    AwakeId = table.Column<int>(type: "INTEGER", nullable: true),
+                    AddedStatsId = table.Column<int>(type: "INTEGER", nullable: true),
+                    MailInfoId = table.Column<int>(type: "INTEGER", nullable: true),
+                    MountInfoId = table.Column<int>(type: "INTEGER", nullable: true),
+                    ParentItemID = table.Column<ulong>(type: "INTEGER", nullable: true),
+                    RecipeInfoId = table.Column<int>(type: "INTEGER", nullable: true),
+                    RecipeInfoId1 = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserItems", x => x.UniqueID);
+                    table.ForeignKey(
+                        name: "FK_UserItems_Awakes_AwakeId",
+                        column: x => x.AwakeId,
+                        principalTable: "Awakes",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserItems_ExpireInfos_ExpireInfoId",
+                        column: x => x.ExpireInfoId,
+                        principalTable: "ExpireInfos",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserItems_ItemInfos_ItemIndex",
+                        column: x => x.ItemIndex,
+                        principalTable: "ItemInfos",
+                        principalColumn: "Index",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserItems_MailInfo_MailInfoId",
+                        column: x => x.MailInfoId,
+                        principalTable: "MailInfo",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserItems_MountInfo_MountInfoId",
+                        column: x => x.MountInfoId,
+                        principalTable: "MountInfo",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserItems_RecipeInfo_RecipeInfoId",
+                        column: x => x.RecipeInfoId,
+                        principalTable: "RecipeInfo",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserItems_RecipeInfo_RecipeInfoId1",
+                        column: x => x.RecipeInfoId1,
+                        principalTable: "RecipeInfo",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserItems_RentalInformations_RentalInformationId",
+                        column: x => x.RentalInformationId,
+                        principalTable: "RentalInformations",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserItems_SealedInfos_SealedInfoId",
+                        column: x => x.SealedInfoId,
+                        principalTable: "SealedInfos",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserItems_Stats_AddedStatsId",
+                        column: x => x.AddedStatsId,
+                        principalTable: "Stats",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserItems_UserItems_ParentItemID",
+                        column: x => x.ParentItemID,
+                        principalTable: "UserItems",
+                        principalColumn: "UniqueID");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Auctions_AccountInfoId",
                 table: "Auctions",
                 column: "AccountInfoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Auctions_CurrentBuyerIndex",
+                name: "IX_Auctions_CurrentBuyerId",
                 table: "Auctions",
-                column: "CurrentBuyerIndex");
+                column: "CurrentBuyerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Auctions_ItemUniqueID",
@@ -1353,14 +1656,14 @@ namespace Server.Library.Migrations
                 column: "ItemUniqueID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Auctions_SellerIndex",
+                name: "IX_Auctions_SellerId",
                 table: "Auctions",
-                column: "SellerIndex");
+                column: "SellerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Buffs_CharacterInfoIndex",
+                name: "IX_Buffs_CharacterInfoId",
                 table: "Buffs",
-                column: "CharacterInfoIndex");
+                column: "CharacterInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Buffs_StatsId",
@@ -1383,9 +1686,59 @@ namespace Server.Library.Migrations
                 column: "MountId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FriendInfo_CharacterInfoIndex",
+                name: "IX_ConquestArcherInfo_ConquestInfoId",
+                table: "ConquestArcherInfo",
+                column: "ConquestInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConquestFlagInfo_ConquestInfoId",
+                table: "ConquestFlagInfo",
+                column: "ConquestInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConquestFlagInfo_ConquestInfoId1",
+                table: "ConquestFlagInfo",
+                column: "ConquestInfoId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConquestGateInfo_ConquestInfoId",
+                table: "ConquestGateInfo",
+                column: "ConquestInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConquestGuildArcherInfo_ConquestGuildInfoId",
+                table: "ConquestGuildArcherInfo",
+                column: "ConquestGuildInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConquestGuildGateInfo_ConquestGuildInfoId",
+                table: "ConquestGuildGateInfo",
+                column: "ConquestGuildInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConquestGuildSiegeInfo_ConquestGuildInfoId",
+                table: "ConquestGuildSiegeInfo",
+                column: "ConquestGuildInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConquestGuildWallInfo_ConquestGuildInfoId",
+                table: "ConquestGuildWallInfo",
+                column: "ConquestGuildInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConquestSiegeInfo_ConquestInfoId",
+                table: "ConquestSiegeInfo",
+                column: "ConquestInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConquestWallInfo_ConquestInfoId",
+                table: "ConquestWallInfo",
+                column: "ConquestInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FriendInfo_CharacterInfoId",
                 table: "FriendInfo",
-                column: "CharacterInfoIndex");
+                column: "CharacterInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GameShopItems_ItemIndex",
@@ -1393,44 +1746,44 @@ namespace Server.Library.Migrations
                 column: "ItemIndex");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GuildBuff_GuildInfoGuildIndex",
-                table: "GuildBuff",
-                column: "GuildInfoGuildIndex");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GuildBuff_InfoId",
-                table: "GuildBuff",
-                column: "InfoId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_GuildBuffInfos_StatsId",
                 table: "GuildBuffInfos",
                 column: "StatsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GuildMember_GuildRankId",
-                table: "GuildMember",
-                column: "GuildRankId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GuildRank_GuildInfoGuildIndex",
-                table: "GuildRank",
+                name: "IX_GuildBuffs_GuildInfoGuildIndex",
+                table: "GuildBuffs",
                 column: "GuildInfoGuildIndex");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemRentalInformation_CharacterInfoIndex",
-                table: "ItemRentalInformation",
-                column: "CharacterInfoIndex");
+                name: "IX_GuildBuffs_InfoId",
+                table: "GuildBuffs",
+                column: "InfoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemRentalInformation_CharacterInfoIndex1",
-                table: "ItemRentalInformation",
-                column: "CharacterInfoIndex1");
+                name: "IX_GuildMembers_GuildRankId",
+                table: "GuildMembers",
+                column: "GuildRankId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MailInfo_RecipientInfoIndex",
+                name: "IX_GuildRanks_GuildInfoGuildIndex",
+                table: "GuildRanks",
+                column: "GuildInfoGuildIndex");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemRentalInformations_CharacterInfoId",
+                table: "ItemRentalInformations",
+                column: "CharacterInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemRentalInformations_CharacterInfoId1",
+                table: "ItemRentalInformations",
+                column: "CharacterInfoId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MailInfo_RecipientInfoId",
                 table: "MailInfo",
-                column: "RecipientInfoIndex");
+                column: "RecipientInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MineZones_MapInfoId",
@@ -1453,9 +1806,9 @@ namespace Server.Library.Migrations
                 column: "MapInfoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PetInfo_CharacterInfoIndex",
+                name: "IX_PetInfo_CharacterInfoId",
                 table: "PetInfo",
-                column: "CharacterInfoIndex");
+                column: "CharacterInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuestFlagTaskProgress_InfoId",
@@ -1498,14 +1851,19 @@ namespace Server.Library.Migrations
                 column: "QuestProgressInfoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestProgressInfo_CharacterInfoIndex",
+                name: "IX_QuestProgressInfo_CharacterInfoId",
                 table: "QuestProgressInfo",
-                column: "CharacterInfoIndex");
+                column: "CharacterInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuestProgressInfo_InfoIndex",
                 table: "QuestProgressInfo",
                 column: "InfoIndex");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RecipeInfo_ItemUniqueID",
+                table: "RecipeInfo",
+                column: "ItemUniqueID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RespawnInfo_MapInfoId",
@@ -1524,9 +1882,9 @@ namespace Server.Library.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserIntelligentCreature_CharacterInfoIndex",
+                name: "IX_UserIntelligentCreature_CharacterInfoId",
                 table: "UserIntelligentCreature",
-                column: "CharacterInfoIndex");
+                column: "CharacterInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserIntelligentCreature_FilterId",
@@ -1574,6 +1932,16 @@ namespace Server.Library.Migrations
                 column: "ParentItemID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserItems_RecipeInfoId",
+                table: "UserItems",
+                column: "RecipeInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserItems_RecipeInfoId1",
+                table: "UserItems",
+                column: "RecipeInfoId1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserItems_RentalInformationId",
                 table: "UserItems",
                 column: "RentalInformationId");
@@ -1584,9 +1952,9 @@ namespace Server.Library.Migrations
                 column: "SealedInfoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserMagic_CharacterInfoIndex",
+                name: "IX_UserMagic_CharacterInfoId",
                 table: "UserMagic",
-                column: "CharacterInfoIndex");
+                column: "CharacterInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserMagic_InfoId",
@@ -1594,20 +1962,18 @@ namespace Server.Library.Migrations
                 column: "InfoId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Auctions_CharacterInfo_CurrentBuyerIndex",
+                name: "FK_Auctions_CharacterInfo_CurrentBuyerId",
                 table: "Auctions",
-                column: "CurrentBuyerIndex",
+                column: "CurrentBuyerId",
                 principalTable: "CharacterInfo",
-                principalColumn: "Index",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Auctions_CharacterInfo_SellerIndex",
+                name: "FK_Auctions_CharacterInfo_SellerId",
                 table: "Auctions",
-                column: "SellerIndex",
+                column: "SellerId",
                 principalTable: "CharacterInfo",
-                principalColumn: "Index",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Auctions_UserItems_ItemUniqueID",
@@ -1617,16 +1983,23 @@ namespace Server.Library.Migrations
                 principalColumn: "UniqueID");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Buffs_CharacterInfo_CharacterInfoIndex",
+                name: "FK_Buffs_CharacterInfo_CharacterInfoId",
                 table: "Buffs",
-                column: "CharacterInfoIndex",
+                column: "CharacterInfoId",
                 principalTable: "CharacterInfo",
-                principalColumn: "Index");
+                principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_CharacterInfo_UserItems_CurrentRefineUniqueID",
                 table: "CharacterInfo",
                 column: "CurrentRefineUniqueID",
+                principalTable: "UserItems",
+                principalColumn: "UniqueID");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_RecipeInfo_UserItems_ItemUniqueID",
+                table: "RecipeInfo",
+                column: "ItemUniqueID",
                 principalTable: "UserItems",
                 principalColumn: "UniqueID");
         }
@@ -1639,8 +2012,12 @@ namespace Server.Library.Migrations
                 table: "CharacterInfo");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_MailInfo_CharacterInfo_RecipientInfoIndex",
+                name: "FK_MailInfo_CharacterInfo_RecipientInfoId",
                 table: "MailInfo");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_RecipeInfo_UserItems_ItemUniqueID",
+                table: "RecipeInfo");
 
             migrationBuilder.DropTable(
                 name: "Auctions");
@@ -1650,6 +2027,33 @@ namespace Server.Library.Migrations
 
             migrationBuilder.DropTable(
                 name: "Buffs");
+
+            migrationBuilder.DropTable(
+                name: "ConquestArcherInfo");
+
+            migrationBuilder.DropTable(
+                name: "ConquestFlagInfo");
+
+            migrationBuilder.DropTable(
+                name: "ConquestGateInfo");
+
+            migrationBuilder.DropTable(
+                name: "ConquestGuildArcherInfo");
+
+            migrationBuilder.DropTable(
+                name: "ConquestGuildGateInfo");
+
+            migrationBuilder.DropTable(
+                name: "ConquestGuildSiegeInfo");
+
+            migrationBuilder.DropTable(
+                name: "ConquestGuildWallInfo");
+
+            migrationBuilder.DropTable(
+                name: "ConquestSiegeInfo");
+
+            migrationBuilder.DropTable(
+                name: "ConquestWallInfo");
 
             migrationBuilder.DropTable(
                 name: "DragonInfo");
@@ -1664,13 +2068,13 @@ namespace Server.Library.Migrations
                 name: "GTMaps");
 
             migrationBuilder.DropTable(
-                name: "GuildBuff");
+                name: "GuildBuffs");
 
             migrationBuilder.DropTable(
-                name: "GuildMember");
+                name: "GuildMembers");
 
             migrationBuilder.DropTable(
-                name: "ItemRentalInformation");
+                name: "ItemRentalInformations");
 
             migrationBuilder.DropTable(
                 name: "MineZones");
@@ -1706,10 +2110,16 @@ namespace Server.Library.Migrations
                 name: "UserMagic");
 
             migrationBuilder.DropTable(
+                name: "ConquestGuildInfo");
+
+            migrationBuilder.DropTable(
+                name: "ConquestInfo");
+
+            migrationBuilder.DropTable(
                 name: "GuildBuffInfos");
 
             migrationBuilder.DropTable(
-                name: "GuildRank");
+                name: "GuildRanks");
 
             migrationBuilder.DropTable(
                 name: "QuestFlagTask");
@@ -1766,6 +2176,9 @@ namespace Server.Library.Migrations
                 name: "MountInfo");
 
             migrationBuilder.DropTable(
+                name: "RecipeInfo");
+
+            migrationBuilder.DropTable(
                 name: "RentalInformations");
 
             migrationBuilder.DropTable(
@@ -1775,7 +2188,7 @@ namespace Server.Library.Migrations
                 name: "Stats");
 
             migrationBuilder.DropTable(
-                name: "Items");
+                name: "ItemInfos");
         }
     }
 }

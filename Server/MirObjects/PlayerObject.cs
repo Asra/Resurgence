@@ -820,7 +820,7 @@ namespace Server.MirObjects
             {
                 if (HasBuff(BuffType.Lover, out Buff buff))
                 {
-                    CharacterInfo lover = Envir.GetCharacterInfo(Info.Married);
+                    CharacterInfo lover = Envir.AccountService.GetCharacterByIndex(Info.Married);
                     PlayerObject loverPlayer = Envir.GetPlayer(lover.Name);
                     if (loverPlayer != null && loverPlayer.CurrentMap == CurrentMap && Functions.InRange(loverPlayer.CurrentLocation, CurrentLocation, Globals.DataRange) && !loverPlayer.Dead)
                     {
@@ -833,7 +833,7 @@ namespace Server.MirObjects
             {
                 if (HasBuff(BuffType.Mentee, out _))
                 {
-                    CharacterInfo mentor = Envir.GetCharacterInfo(Info.Mentor);
+                    CharacterInfo mentor = Envir.AccountService.GetCharacterByIndex(Info.Mentor);
                     PlayerObject mentorPlayer = Envir.GetPlayer(mentor.Name);
                     if (mentorPlayer != null && mentorPlayer.CurrentMap == CurrentMap && Functions.InRange(mentorPlayer.CurrentLocation, CurrentLocation, Globals.DataRange) && !mentorPlayer.Dead)
                     {
@@ -904,7 +904,7 @@ namespace Server.MirObjects
 
             if (Info.Mentor != 0 && !Info.IsMentor)
             {
-                CharacterInfo Mentor = Envir.GetCharacterInfo(Info.Mentor);
+                CharacterInfo Mentor = Envir.AccountService.GetCharacterByIndex(Info.Mentor);
                 if ((Mentor != null) && ((Info.Level + Settings.MentorLevelGap) > Mentor.Level))
                     MentorBreak();
             }
@@ -1431,7 +1431,7 @@ namespace Server.MirObjects
 
                 if (Info.Married != 0)
                 {
-                    CharacterInfo Lover = Envir.GetCharacterInfo(Info.Married);
+                    CharacterInfo Lover = Envir.AccountService.GetCharacterByIndex(Info.Married);
                     PlayerObject player = Envir.GetPlayer(Lover.Name);
 
                     if (player != null) player.GetRelationship(false);
@@ -1884,7 +1884,7 @@ namespace Server.MirObjects
 
                 if (Info.Mentor == 0) return;
 
-                CharacterInfo Mentor = Envir.GetCharacterInfo(Info.Mentor);
+                CharacterInfo Mentor = Envir.AccountService.GetCharacterByIndex(Info.Mentor);
                 PlayerObject player = Envir.GetPlayer(Mentor.Name);
 
                 if (player == null)
@@ -1974,7 +1974,7 @@ namespace Server.MirObjects
 
                 if (Info.Married == 0) return;
 
-                CharacterInfo Lover = Envir.GetCharacterInfo(Info.Married);
+                CharacterInfo Lover = Envir.AccountService.GetCharacterByIndex(Info.Married);
                 PlayerObject player = Envir.GetPlayer(Lover.Name);
             
                 if (player == null)
@@ -2081,7 +2081,7 @@ namespace Server.MirObjects
                     case "CHANGEGENDER":
                         if (!IsGM && !Settings.TestServer) return;
 
-                        data = parts.Length < 2 ? Info : Envir.GetCharacterInfo(parts[1]);
+                        data = parts.Length < 2 ? Info : Envir.AccountService.GetCharacterByName(parts[1]);
 
                         if (data == null) return;
 
@@ -2447,7 +2447,7 @@ namespace Server.MirObjects
 
                         if (Info.Equipment[(int)EquipmentSlot.RingL].WeddingRing == Info.Married)
                         {
-                            CharacterInfo Lover = Envir.GetCharacterInfo(Info.Married);
+                            CharacterInfo Lover = Envir.AccountService.GetCharacterByIndex(Info.Married);
 
                             if (Lover == null) return;
 
@@ -2537,7 +2537,7 @@ namespace Server.MirObjects
                         {
                             if (!IsGM || parts.Length < 2) return;
 
-                            var info = Envir.GetCharacterInfo(parts[1]);
+                            var info = Envir.AccountService.GetCharacterByName(parts[1]);
 
                             if (info == null)
                             {
@@ -2556,7 +2556,7 @@ namespace Server.MirObjects
                         {
                             if (!IsGM || parts.Length < 2) return;
 
-                            data = Envir.GetCharacterInfo(parts[1]);
+                            data = Envir.AccountService.GetCharacterByName(parts[1]);
 
                             if (data == null)
                             {
@@ -2570,7 +2570,7 @@ namespace Server.MirObjects
                                 return;
                             }
 
-                            var account = Envir.GetAccountByCharacter(parts[1]);
+                            var account = Envir.AccountService.GetAccountByCharacter(parts[1]);
 
                             if (account == null)
                             {
@@ -2580,7 +2580,7 @@ namespace Server.MirObjects
 
                             Envir.SaveArchivedCharacter(data);
 
-                            Envir.CharacterList.Remove(data);
+                            //Envir.CharacterList.Remove(data);
                             account.Characters.Remove(data);
 
                             ReceiveChat(string.Format("Player {0} has been archived", data.Name), ChatType.System);
@@ -2602,7 +2602,7 @@ namespace Server.MirObjects
                                 return;
                             }
 
-                            var info = Envir.GetCharacterInfo(bak.Name);
+                            var info = Envir.AccountService.GetCharacterByName(bak.Name);
 
                             if (info == null)
                             {
@@ -2631,13 +2631,13 @@ namespace Server.MirObjects
 
                             if (parts.Length > 2)
                             {
-                                if (!Envir.AccountExists(parts[2]))
+                                if (!Envir.AccountService.AccountExists(parts[2]))
                                 {
                                     ReceiveChat(string.Format("Account {0} was not found", parts[2]), ChatType.System);
                                     return;
                                 }
 
-                                account = Envir.GetAccount(parts[2]);
+                                account = Envir.AccountService.GetAccountByName(parts[2]);
 
                                 if (account.Characters.Count >= Globals.MaxCharacterCount)
                                 {
@@ -2646,7 +2646,7 @@ namespace Server.MirObjects
                                 }
                             }
 
-                            data = Envir.GetCharacterInfo(parts[1]);
+                            data = Envir.AccountService.GetCharacterByName(parts[1]);
 
                             if (data == null)
                             {
@@ -2663,7 +2663,7 @@ namespace Server.MirObjects
                                     data.AccountInfo = account;
 
                                     account.Characters.Add(data);
-                                    Envir.CharacterList.Add(data);
+                                    Envir.AccountService.AddCharacterToAccount(account.Id, data);
 
                                     data.Deleted = false;
                                     data.DeleteDate = DateTime.MinValue;
@@ -3279,7 +3279,7 @@ namespace Server.MirObjects
                     case "CHANGECLASS": //@changeclass [Player] [Class]
                         if (!IsGM && !Settings.TestServer) return;
 
-                        data = parts.Length <= 2 || !IsGM ? Info : Envir.GetCharacterInfo(parts[1]);
+                        data = parts.Length <= 2 || !IsGM ? Info : Envir.AccountService.GetCharacterByName(parts[1]);
 
                         if (data == null) return;
 
@@ -4405,7 +4405,7 @@ namespace Server.MirObjects
 
             if (Info.Married != 0)
             {
-                CharacterInfo Lover = Envir.GetCharacterInfo(Info.Married);
+                CharacterInfo Lover = Envir.AccountService.GetCharacterByIndex(Info.Married);
                 PlayerObject player = Envir.GetPlayer(Lover.Name);
 
                 if (player != null) player.GetRelationship(false);
@@ -8424,7 +8424,7 @@ namespace Server.MirObjects
 
         public void RequestUserName(uint id)
         {
-            CharacterInfo Character = Envir.GetCharacterInfo((int)id);
+            CharacterInfo Character = Envir.AccountService.GetCharacterByIndex((int)id);
             if (Character != null)
                 Enqueue(new S.UserName { Id = (uint)Character.Index, Name = Character.Name });
         }
@@ -11129,7 +11129,7 @@ namespace Server.MirObjects
                 return;
             }
 
-            CharacterInfo player = Envir.GetCharacterInfo(name);
+            CharacterInfo player = Envir.AccountService.GetCharacterByName(name);
 
             if (player == null)
             {
@@ -11182,7 +11182,7 @@ namespace Server.MirObjects
                 return;
             }
 
-            CharacterInfo player = Envir.GetCharacterInfo(name);
+            CharacterInfo player = Envir.AccountService.GetCharacterByName(name);
 
             if (player == null)
             {
@@ -11861,7 +11861,7 @@ namespace Server.MirObjects
         #region Friends
         public void AddFriend(string name, bool blocked = false)
         {
-            CharacterInfo info = Envir.GetCharacterInfo(name);
+            CharacterInfo info = Envir.AccountService.GetCharacterByName(name);
 
             if (info == null)
             {
@@ -12419,7 +12419,7 @@ namespace Server.MirObjects
                 return;
             }
 
-            CharacterInfo lover = Envir.GetCharacterInfo(Info.Married);
+            CharacterInfo lover = Envir.AccountService.GetCharacterByIndex(Info.Married);
             PlayerObject player = Envir.GetPlayer(lover.Name);
 
             Info.Married = 0;
@@ -12843,7 +12843,7 @@ namespace Server.MirObjects
             }
             else
             {
-                CharacterInfo Lover = Envir.GetCharacterInfo(Info.Married);
+                CharacterInfo Lover = Envir.AccountService.GetCharacterByIndex(Info.Married);
 
                 PlayerObject player = Envir.GetPlayer(Lover.Name);
 
@@ -12863,7 +12863,7 @@ namespace Server.MirObjects
         public void LogoutRelationship()
         {
             if (Info.Married == 0) return;
-            CharacterInfo lover = Envir.GetCharacterInfo(Info.Married);
+            CharacterInfo lover = Envir.AccountService.GetCharacterByIndex(Info.Married);
 
             if (lover == null)
             {
@@ -12891,7 +12891,7 @@ namespace Server.MirObjects
                 return;
             }
 
-            CharacterInfo partner = Envir.GetCharacterInfo(Info.Mentor);
+            CharacterInfo partner = Envir.AccountService.GetCharacterByIndex(Info.Mentor);
             PlayerObject partnerP = Envir.GetPlayer(partner.Name);
 
             if (force)
@@ -13092,7 +13092,7 @@ namespace Server.MirObjects
             }
             else
             {
-                CharacterInfo mentor = Envir.GetCharacterInfo(Info.Mentor);
+                CharacterInfo mentor = Envir.AccountService.GetCharacterByIndex(Info.Mentor);
 
                 PlayerObject player = Envir.GetPlayer(mentor.Name);
 
@@ -13110,7 +13110,7 @@ namespace Server.MirObjects
         {
             if (Info.Mentor == 0) return;
 
-            CharacterInfo mentor = Envir.GetCharacterInfo(Info.Mentor);
+            CharacterInfo mentor = Envir.AccountService.GetCharacterByIndex(Info.Mentor);
 
             if (mentor == null)
             {

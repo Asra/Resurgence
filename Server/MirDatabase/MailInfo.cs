@@ -139,7 +139,7 @@ namespace Server.MirEnvir
 
             if (RecipientInfo == null)
             {
-                RecipientInfo = Envir.GetCharacterInfo(RecipientIndex);
+                RecipientInfo = Envir.AccountService.GetCharacterByIndex(RecipientIndex);
             }
 
             RecipientInfo.Mail.Add(this); //add to players inbox

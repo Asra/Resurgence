@@ -509,7 +509,7 @@ namespace Server.MirObjects
 
             if (Info.Mentor != 0 && !mentor)
             {
-                CharacterInfo partnerC = Envir.GetCharacterInfo(Info.Mentor);
+                CharacterInfo partnerC = Envir.AccountService.GetCharacterByIndex(Info.Mentor);
                 PlayerObject partnerP = partnerC != null ? Envir.GetPlayer(partnerC.Name) : null;
 
                 if (partnerP != null)
@@ -527,7 +527,7 @@ namespace Server.MirObjects
 
             if (Info.Married != 0 && !lover)
             {
-                CharacterInfo loverC = Envir.GetCharacterInfo(Info.Married);
+                CharacterInfo loverC = Envir.AccountService.GetCharacterByIndex(Info.Married);
                 PlayerObject loverP = loverC != null ? Envir.GetPlayer(loverC.Name) : null;
 
                 if (loverP != null)
@@ -6777,7 +6777,7 @@ namespace Server.MirObjects
             {
                 if (HasBuff(BuffType.Mentee, out _))
                 {
-                    CharacterInfo mentor = Envir.GetCharacterInfo(Info.Mentor);
+                    CharacterInfo mentor = Envir.AccountService.GetCharacterByIndex(Info.Mentor);
                     PlayerObject player = Envir.GetPlayer(mentor.Name);
                     if (player.CurrentMap == CurrentMap && Functions.InRange(player.CurrentLocation, CurrentLocation, Globals.DataRange) && !player.Dead)
                     {

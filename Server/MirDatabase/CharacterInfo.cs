@@ -4,11 +4,15 @@ using Server.MirNetwork;
 using Server.MirObjects;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using Server.Services;
+using Microsoft.EntityFrameworkCore;
+using Server.MirDatabase;
 
 namespace Server.MirDatabase
 {
     [Table("CharacterInfo")]
-    public class CharacterInfo
+    public class CharacterInfo : DatabaseEntity
     {
         [NotMapped]
         protected static Envir Envir
@@ -17,6 +21,9 @@ namespace Server.MirDatabase
         }
 
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
         public int Index { get; set; }
         public string Name { get; set; }
         public ushort Level { get; set; }
@@ -106,56 +113,24 @@ namespace Server.MirDatabase
         public byte MentalState { get; set; }
         public byte MentalStateLvl { get; set; }
 
-        private string _inventoryJson { get; set; }
-        private string _equipmentJson { get; set; }
-        private string _tradeJson { get; set; }
-        private string _questInventoryJson { get; set; }
-        private string _refineJson { get; set; }
+        public string InventoryJson { get; set; }
+        public string EquipmentJson { get; set; }
+        public string TradeJson { get; set; }
+        public string QuestInventoryJson { get; set; }
+        public string RefineJson { get; set; }
 
+        // These are the in-memory representations used in code as EF core can't handle arrays of objects
         [NotMapped]
-        public UserItem[] Inventory
-        {
-            get => string.IsNullOrEmpty(_inventoryJson) 
-                ? new UserItem[46] 
-                : System.Text.Json.JsonSerializer.Deserialize<UserItem[]>(_inventoryJson);
-            set => _inventoryJson = System.Text.Json.JsonSerializer.Serialize(value);
-        }
+        public UserItem[] Inventory { get; set; } = new UserItem[46];
+        [NotMapped]
+        public UserItem[] Equipment { get; set; } = new UserItem[14];
+        [NotMapped]
+        public UserItem[] Trade { get; set; } = new UserItem[10];
+        [NotMapped]
+        public UserItem[] QuestInventory { get; set; } = new UserItem[40];
+        [NotMapped]
+        public UserItem[] Refine { get; set; } = new UserItem[16];
 
-        [NotMapped]
-        public UserItem[] Equipment
-        {
-            get => string.IsNullOrEmpty(_equipmentJson) 
-                ? new UserItem[14] 
-                : System.Text.Json.JsonSerializer.Deserialize<UserItem[]>(_equipmentJson);
-            set => _equipmentJson = System.Text.Json.JsonSerializer.Serialize(value);
-        }
-
-        [NotMapped]
-        public UserItem[] Trade
-        {
-            get => string.IsNullOrEmpty(_tradeJson) 
-                ? new UserItem[10] 
-                : System.Text.Json.JsonSerializer.Deserialize<UserItem[]>(_tradeJson);
-            set => _tradeJson = System.Text.Json.JsonSerializer.Serialize(value);
-        }
-
-        [NotMapped]
-        public UserItem[] QuestInventory
-        {
-            get => string.IsNullOrEmpty(_questInventoryJson) 
-                ? new UserItem[40] 
-                : System.Text.Json.JsonSerializer.Deserialize<UserItem[]>(_questInventoryJson);
-            set => _questInventoryJson = System.Text.Json.JsonSerializer.Serialize(value);
-        }
-
-        [NotMapped]
-        public UserItem[] Refine
-        {
-            get => string.IsNullOrEmpty(_refineJson) 
-                ? new UserItem[16] 
-                : System.Text.Json.JsonSerializer.Deserialize<UserItem[]>(_refineJson);
-            set => _refineJson = System.Text.Json.JsonSerializer.Serialize(value);
-        }
         
         public List<ItemRentalInformation> RentedItems { get; set; } = new List<ItemRentalInformation>();
         public List<ItemRentalInformation> RentedItemsToRemove { get; set; } = new List<ItemRentalInformation>();
@@ -177,6 +152,7 @@ namespace Server.MirDatabase
         public List<int> CompletedQuests { get; set; } = new List<int>();
 
         public bool[] Flags { get; set; } = new bool[Globals.FlagIndexCount];
+
 
         public AccountInfo AccountInfo { get; set; }
         public PlayerObject Player { get; set; }
@@ -207,6 +183,7 @@ namespace Server.MirDatabase
 
         public CharacterInfo(ClientPackets.NewCharacter p, MirConnection c)
         {
+            AccountInfo = c.Account;
             Name = p.Name;
             Class = p.Class;
             Gender = p.Gender;
@@ -842,7 +819,7 @@ namespace Server.MirDatabase
             {
                 if (_Info == null)
                 {
-                    _Info = Envir.GetCharacterInfo(Index);
+                    _Info = Envir.AccountService.GetCharacterByIndex(Index);
                 }
 
                 return _Info;
@@ -885,6 +862,38 @@ namespace Server.MirDatabase
                 Memo = Memo,
                 Online = Info.Player != null && Info.Player.Node != null
             };
+        }
+    }
+
+    public class CharacterService : CacheService<CharacterInfo>
+    {
+        // Return the correct DbSet from your GameDbContext.
+        protected override DbSet<CharacterInfo> GetDbSet(GameDbContext context)
+        {
+            return context.CharacterInfos;
+        }
+
+        // Override the Create method to handle the AccountInfo relationship
+        public override void Create(CharacterInfo character)
+        {
+            using (var context = new GameDbContext())
+            {
+                // If the character has an AccountInfo reference
+                if (character.AccountInfo != null)
+                {
+                    // Check if the account already exists in the database
+                    var existingAccount = context.AccountInfos.Find(character.AccountInfo.Id);
+                    if (existingAccount != null)
+                    {
+                        // Use the existing account reference instead of creating a new one
+                        character.AccountInfo = existingAccount;
+                    }
+                }
+                
+                GetDbSet(context).Add(character);
+                context.SaveChanges();
+            }
+            _cache.Add(character);
         }
     }
 }

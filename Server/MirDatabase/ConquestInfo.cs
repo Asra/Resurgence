@@ -1,52 +1,86 @@
 using System.Drawing;
 ﻿using Server.MirEnvir;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 
 namespace Server.MirDatabase
 {
+    [Table("ConquestInfo")]
     public class ConquestInfo
     {
-        public int Index;
-        public bool FullMap;
-        public Point Location;
-        public ushort Size;
-        public string Name;
-        public int MapIndex;
-        public int PalaceIndex;
 
-        public List<int> ExtraMaps = new List<int>();
-        public List<ConquestArcherInfo> ConquestGuards = new List<ConquestArcherInfo>();
-        public List<ConquestGateInfo> ConquestGates = new List<ConquestGateInfo>();
-        public List<ConquestWallInfo> ConquestWalls = new List<ConquestWallInfo>();
-        public List<ConquestSiegeInfo> ConquestSieges = new List<ConquestSiegeInfo>();
-        public List<ConquestFlagInfo> ConquestFlags = new List<ConquestFlagInfo>();
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
-        public int GuardIndex;
-        public int GateIndex;
-        public int WallIndex;
-        public int SiegeIndex;
-        public int FlagIndex;
+        public int Index { get; set; }
+        public bool FullMap { get; set; }
+        public int LocationX { get; set; }
+        public int LocationY { get; set; }
 
-        public byte StartHour = 0;
-        public int WarLength = 60;
+        [NotMapped]
+        public Point Location
+        {
+            get => new Point(LocationX, LocationY);
+            set
+            {
+                LocationX = value.X;
+                LocationY = value.Y;
+            }
+        }
+        public ushort Size { get; set; }
+        public string Name { get; set; }
+        public int MapIndex { get; set; }
+        public int PalaceIndex { get; set; }
 
-        public ConquestType Type = ConquestType.Request;
-        public ConquestGame Game = ConquestGame.CapturePalace;
+        public List<int> ExtraMaps { get; set; } = new List<int>();
+        public List<ConquestArcherInfo> ConquestGuards { get; set; } = new List<ConquestArcherInfo>();
+        public List<ConquestGateInfo> ConquestGates { get; set; } = new List<ConquestGateInfo>();
+        public List<ConquestWallInfo> ConquestWalls { get; set; } = new List<ConquestWallInfo>();
+        public List<ConquestSiegeInfo> ConquestSieges { get; set; } = new List<ConquestSiegeInfo>();
+        public List<ConquestFlagInfo> ConquestFlags { get; set; } = new List<ConquestFlagInfo>();
 
-        public bool Monday;
-        public bool Tuesday;
-        public bool Wednesday;
-        public bool Thursday;
-        public bool Friday;
-        public bool Saturday;
-        public bool Sunday;
+        public int GuardIndex { get; set; }
+        public int GateIndex { get; set; }
+        public int WallIndex { get; set; }
+        public int SiegeIndex { get; set; }
+        public int FlagIndex { get; set; }
+
+        public byte StartHour { get; set; } = 0;
+        public int WarLength { get; set; } = 60;
+
+        public ConquestType Type { get; set; } = ConquestType.Request;
+        public ConquestGame Game { get; set; } = ConquestGame.CapturePalace;
+
+        public bool Monday { get; set; }
+        public bool Tuesday { get; set; }
+        public bool Wednesday { get; set; }
+        public bool Thursday { get; set; }
+        public bool Friday { get; set; }
+        public bool Saturday { get; set; }
+        public bool Sunday { get; set; }
 
         //King of the hill
-        public Point KingLocation;
-        public ushort KingSize;
+        public int KingLocationX { get; set; }
+        public int KingLocationY { get; set; }
+
+        [NotMapped]
+        public Point KingLocation
+        {
+            get => new Point(KingLocationX, KingLocationY);
+            set
+            {
+                KingLocationX = value.X;
+                KingLocationY = value.Y;
+            }
+        }
+
+        public ushort KingSize { get; set; }
 
         //Control points
-        public List<ConquestFlagInfo> ControlPoints = new List<ConquestFlagInfo>();
-        public int ControlPointIndex;
+        public List<ConquestFlagInfo> ControlPoints { get; set; } = new List<ConquestFlagInfo>();
+        public int ControlPointIndex { get; set; }
 
         public ConquestInfo() { }
 
@@ -223,13 +257,31 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("ConquestSiegeInfo")]
     public class ConquestSiegeInfo
     {
-        public int Index;
-        public Point Location;
-        public int MobIndex;
-        public string Name;
-        public int RepairCost;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        public int Index { get; set; }
+        public int LocationX { get; set; }
+        public int LocationY { get; set; }
+
+        [NotMapped]
+        public Point Location
+        {
+            get => new Point(LocationX, LocationY);
+            set
+            {
+                LocationX = value.X;
+                LocationY = value.Y;
+            }
+        }
+
+        public int MobIndex { get; set; }
+        public string Name { get; set; }
+        public int RepairCost { get; set; }
 
         public ConquestSiegeInfo() { }
 
@@ -266,13 +318,31 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("ConquestWallInfo")]
     public class ConquestWallInfo
     {
-        public int Index;
-        public Point Location;
-        public int MobIndex;
-        public string Name;
-        public int RepairCost;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        public int Index { get; set; }
+        public int LocationX { get; set; }
+        public int LocationY { get; set; }
+
+        [NotMapped]
+        public Point Location
+        {
+            get => new Point(LocationX, LocationY);
+            set
+            {
+                LocationX = value.X;
+                LocationY = value.Y;
+            }
+        }
+
+        public int MobIndex { get; set; }
+        public string Name { get; set; }
+        public int RepairCost { get; set; }
 
         public ConquestWallInfo() { }
 
@@ -309,13 +379,31 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("ConquestGateInfo")]
     public class ConquestGateInfo
     {
-        public int Index;
-        public Point Location;
-        public int MobIndex;
-        public string Name;
-        public int RepairCost;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        public int Index { get; set; }
+        public int LocationX { get; set; }
+        public int LocationY { get; set; }
+
+        [NotMapped]
+        public Point Location
+        {
+            get => new Point(LocationX, LocationY);
+            set
+            {
+                LocationX = value.X;
+                LocationY = value.Y;
+            }
+        }
+
+        public int MobIndex { get; set; }
+        public string Name { get; set; }
+        public int RepairCost { get; set; }
 
         public ConquestGateInfo() { }
 
@@ -352,13 +440,30 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("ConquestArcherInfo")]
     public class ConquestArcherInfo
     {
-        public int Index;
-        public Point Location;
-        public int MobIndex;
-        public string Name;
-        public uint RepairCost;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        public int Index { get; set; }
+        public int LocationX { get; set; }
+        public int LocationY { get; set; }
+
+        [NotMapped]
+        public Point Location
+        {
+            get => new Point(LocationX, LocationY);
+            set
+            {
+                LocationX = value.X;
+                LocationY = value.Y;
+            }
+        }
+        public int MobIndex { get; set; }
+        public string Name { get; set; }
+        public uint RepairCost { get; set; }
 
         public ConquestArcherInfo() { }
 
@@ -387,12 +492,30 @@ namespace Server.MirDatabase
         }
     }
 
+    [Table("ConquestFlagInfo")]
     public class ConquestFlagInfo
     {
-        public int Index;
-        public Point Location;
-        public string Name;
-        public string FileName = string.Empty;
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        public int Index { get; set; }
+        public int LocationX { get; set; }
+        public int LocationY { get; set; }
+
+        [NotMapped]
+        public Point Location
+        {
+            get => new Point(LocationX, LocationY);
+            set
+            {
+                LocationX = value.X;
+                LocationY = value.Y;
+            }
+        }
+
+        public string Name { get; set; }
+        public string FileName { get; set; } = string.Empty;
 
         public ConquestFlagInfo() { }
 

@@ -309,18 +309,8 @@ public class UserItem
 
     public string SlotsJson { get; set; }
 
-    private UserItem[] _slots = new UserItem[0];
-
     [NotMapped]
-    public UserItem[] Slots
-    {
-        get => string.IsNullOrEmpty(SlotsJson) ? _slots : (_slots = JsonSerializer.Deserialize<UserItem[]>(SlotsJson));
-        set
-        {
-            _slots = value;
-            SlotsJson = JsonSerializer.Serialize(value);
-        }
-    }
+    public UserItem[] Slots = new UserItem[0];
 
     public DateTime BuybackExpiryDate { get; set; }
 
@@ -656,11 +646,10 @@ public class UserItem
         }
 
         if (size == null && Info == null) return;
-        if (size != null && size == _slots.Length) return;
-        if (size == null && Info != null && Info.Slots == _slots.Length) return;
+        if (size != null && size == Slots.Length) return;
+        if (size == null && Info != null && Info.Slots == Slots.Length) return;
 
-        Array.Resize(ref _slots, size ?? Info.Slots);
-        Slots = _slots;
+        Array.Resize(ref Slots, size ?? Info.Slots);
     }
 
     public ushort Image
