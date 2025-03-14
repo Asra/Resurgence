@@ -1,22 +1,15 @@
-# Legend of Mir 2 - Official Public Crystal Source
+# Legend of Mir 2 - Resurgence
+Welcome to **Resurgence** – a fork of Crystal designed to elevate performance and quality to new heights. Our mission is to modernise the project with a laser focus on speed, efficiency, and an optimised codebase.
 
-Visit our forum at [LOMCN](https://www.lomcn.net/forum/forums/crystalm2-files-open-source.633/) for discussions, help, and updates.
+## What’s Coming?
+- **Performance-Driven Enhancements:** Significant improvements in processing speed and resource efficiency.
+- **Refactored Codebase:** Cleaner, more maintainable code that adheres to modern best practices.
+- **Standardised File Structure:** Organised and uniform files for a seamless development experience.
+- **Enhanced Documentation:** Clear and concise guides to help you navigate and contribute effortlessly.
+- **Networking Enhancements:** Advanced networking capabilities that bolster connectivity, reliability, and reduce latency.
 
-# Useful Links:
+## Why Fork?
+We forked the project to preserve the original Crystal files for those who rely on them, ensuring continued compatibility and usability.
 
-[Build Guide](https://www.lomcn.net/wiki/index.php/Getting_Started) //
-[Wiki](https://www.lomcn.net/wiki/index.php/Crystal) //
-[Databases](https://github.com/Suprcode/Crystal.Database) //
-[Map Editor](https://github.com/Suprcode/Crystal.MapEditor) //
-[Help](https://www.lomcn.net/forum/forums/crystalm2-help.663/) //
-[Tutorials](https://www.lomcn.net/forum/forums/crystalm2-tutorials.634/)
-
-# Other Projects:
-
-[Mir 1](https://github.com/JevLOMCN/mir1/) // [Database](https://github.com/Suprcode/Carbon.Database)
-
-[Mir 3](https://github.com/Suprcode/Zircon)
-
-[Mir 3D](https://github.com/mir-ethernity/mir-eternal)
-
-[Mir 4](https://github.com/JevLOMCN/mir4-launchers)
+## Credits
+A huge thank you to the original Crystal team for laying the solid groundwork on which Resurgence is built. We acknowledge the dedication and innovation of all those who contributed to the [original project](https://github.com/Suprcode/Crystal).
